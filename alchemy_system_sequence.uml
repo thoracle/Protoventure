@@ -1,0 +1,72 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Alchemy Manager" as AlchMgr
+participant "Inventory" as Inv
+participant "Recipe Book" as RecipeBook
+participant "Player Character" as PlayerChar
+participant "UI Manager" as UIMgr
+participant "Item" as Item
+
+' Initiating alchemy session
+Player -> Game: Open alchemy interface
+activate Game
+Game -> AlchMgr: Initialize alchemy session
+activate AlchMgr
+AlchMgr -> RecipeBook: Get known recipes
+RecipeBook --> AlchMgr: Return available recipes
+AlchMgr -> Inv: Check available ingredients
+Inv --> AlchMgr: Return ingredient list
+AlchMgr -> UIMgr: Display alchemy interface
+UIMgr --> Player: Show alchemy options
+
+' Selecting recipe
+Player -> Game: Select recipe to brew
+Game -> AlchMgr: Process recipe selection
+AlchMgr -> RecipeBook: Get recipe details
+RecipeBook --> AlchMgr: Return ingredients and process
+
+' Brewing process
+AlchMgr -> Inv: Remove ingredients
+Inv --> AlchMgr: Confirm ingredients removed
+AlchMgr -> AlchMgr: Calculate brewing success chance
+AlchMgr -> AlchMgr: Simulate brewing process
+
+alt Brewing Successful
+    AlchMgr -> Item: Create new potion
+    Item --> AlchMgr: Return created potion
+    AlchMgr -> Inv: Add potion to inventory
+    Inv --> AlchMgr: Confirm potion added
+    AlchMgr -> PlayerChar: Award alchemy experience
+    AlchMgr -> UIMgr: Display success message
+    UIMgr --> Player: Show brewing success
+else Brewing Failed
+    AlchMgr -> UIMgr: Display failure message
+    UIMgr --> Player: Show brewing failure
+    AlchMgr -> Inv: Return some ingredients
+    Inv --> AlchMgr: Confirm ingredients returned
+end
+
+' Learning new recipe
+Player -> Game: Attempt to discover new recipe
+Game -> AlchMgr: Process discovery attempt
+AlchMgr -> AlchMgr: Calculate discovery chance
+alt New Recipe Discovered
+    AlchMgr -> RecipeBook: Add new recipe
+    RecipeBook --> AlchMgr: Confirm recipe added
+    AlchMgr -> UIMgr: Notify of new recipe
+    UIMgr --> Player: Show new recipe discovery
+else No Discovery
+    AlchMgr -> UIMgr: Notify no discovery
+    UIMgr --> Player: Show no new recipe found
+end
+
+' Ending alchemy session
+Player -> Game: Close alchemy interface
+Game -> AlchMgr: End alchemy session
+AlchMgr --> Game: Session ended
+Game --> Player: Return to main game interface
+
+deactivate AlchMgr
+deactivate Game
+@enduml
