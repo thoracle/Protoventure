@@ -1,0 +1,41 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant Faction
+participant Mission
+
+Player -> Game: Request available missions
+activate Game
+Game -> Faction: Get available missions
+Faction --> Game: Return list of missions
+Game --> Player: Display available missions
+
+Player -> Game: Select mission to accept
+Game -> Faction: Check mission requirements
+Faction --> Game: Return requirements status
+alt Requirements met
+    Game -> Mission: Assign mission to player
+    Mission --> Game: Confirm mission assignment
+    Game -> Player: Update current mission
+    Game --> Player: Confirm mission accepted
+else Requirements not met
+    Game --> Player: Inform of unmet requirements
+end
+
+Player -> Game: Report mission completion
+Game -> Mission: Check completion criteria
+Mission --> Game: Confirm completion status
+alt Mission completed
+    Game -> Mission: Mark as completed
+    Mission --> Game: Confirm status update
+    Game -> Faction: Calculate rewards
+    Faction --> Game: Return rewards
+    Game -> Player: Award mission rewards
+    Game -> Player: Update faction standing
+    Game --> Player: Display mission completion and rewards
+else Mission not completed
+    Game --> Player: Inform of incomplete mission
+end
+
+deactivate Game
+@enduml
