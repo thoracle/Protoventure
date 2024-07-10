@@ -1,8 +1,15 @@
 @startuml
+skinparam classAttributeIconSize 0
+
 class Game {
   +current_location: Location
   +player: Player
   +factions: List[Faction]
+  +npcs: List[NPC]
+  +combat_manager: CombatManager
+  +quest_manager: QuestManager
+  +dialog_manager: DialogManager
+  +trade_manager: TradeManager
   +start_game()
   +create_character()
   +bond_with_dragon()
@@ -10,42 +17,47 @@ class Game {
   +move_to_location(location: Location)
   +explore_location()
   +discover_new_location()
-  +train_dragon(focus: str)
-  +use_dragon_ability(ability: str)
-  +join_faction(faction: Faction)
-  +get_available_missions(faction: Faction)
-  +assign_mission(mission: Mission)
-  +complete_mission(mission: Mission)
-  +update_faction_standing(faction: Faction, change: int)
-  +get_faction_standings()
+  +initiate_combat(enemy: Enemy)
+  +interact_with_npc(npc: NPC)
+  +save_game()
+  +load_game()
 }
 
 class Player {
   +name: str
   +character_class: str
+  +level: int
+  +experience: int
   +stats: Dict[str, int]
+  +abilities: List[Ability]
   +dragon: Dragon
-  +inventory: List[Item]
+  +inventory: Inventory
   +faction_standings: Dict[Faction, int]
   +current_location: Location
   +current_mission: Mission
   +distribute_initial_stats()
   +level_up()
+  +learn_ability(ability: Ability)
+  +use_ability(ability: Ability)
   +ride_dragon()
   +dismount_dragon()
   +view_faction_standings()
+  +accept_mission(mission: Mission)
+  +complete_mission(mission: Mission)
 }
 
 class Dragon {
   +name: str
   +color: str
-  +abilities: List[str]
+  +level: int
+  +abilities: List[Ability]
   +training_level: int
   +is_rideable: bool
   +bond_with_player(player: Player)
   +set_name(name: str)
-  +use_ability(ability: str)
+  +use_ability(ability: Ability)
   +train(focus: str)
+  +level_up()
   +mount_player()
   +dismount_player()
 }
@@ -54,11 +66,14 @@ class Location {
   +name: str
   +description: str
   +connected_locations: List[Location]
-  +undiscovered_locations: List[Location]
+  +npcs: List[NPC]
+  +items: List[Item]
+  +enemies: List[Enemy]
   +get_connected_locations()
   +get_details()
   +discover_location() -> Location
-  +apply_ability_effect(ability: str)
+  +add_item(item: Item)
+  +remove_item(item: Item)
 }
 
 class Faction {
@@ -75,7 +90,8 @@ class Faction {
 class Mission {
   +title: str
   +description: str
-  +reward: int
+  +objectives: List[Objective]
+  +reward: Reward
   +required_standing: int
   +is_completed: bool
   +faction: Faction
@@ -84,19 +100,91 @@ class Mission {
   +check_completion_status()
 }
 
+class Inventory {
+  +items: List[Item]
+  +max_capacity: int
+  +add_item(item: Item)
+  +remove_item(item: Item)
+  +use_item(item: Item)
+  +get_items()
+}
+
 class Item {
   +name: str
   +description: str
+  +value: int
   +use(player: Player)
+}
+
+class Ability {
+  +name: str
+  +description: str
+  +effect: str
+  +use(target: Any)
+}
+
+class NPC {
+  +name: str
+  +dialog: Dict[str, str]
+  +quests: List[Mission]
+  +inventory: Inventory
+  +start_dialog(player: Player)
+  +offer_quest(player: Player)
+  +trade_with_player(player: Player)
+}
+
+class Enemy {
+  +name: str
+  +stats: Dict[str, int]
+  +abilities: List[Ability]
+  +loot: List[Item]
+  +attack(target: Player)
+  +use_ability(ability: Ability, target: Player)
+}
+
+class CombatManager {
+  +initiate_combat(player: Player, enemy: Enemy)
+  +process_combat_round()
+  +check_combat_end()
+  +resolve_combat()
+}
+
+class QuestManager {
+  +available_quests: List[Mission]
+  +active_quests: List[Mission]
+  +completed_quests: List[Mission]
+  +assign_quest(quest: Mission, player: Player)
+  +complete_quest(quest: Mission, player: Player)
+  +get_available_quests(player: Player)
+}
+
+class DialogManager {
+  +start_dialog(player: Player, npc: NPC)
+  +get_dialog_options(npc: NPC)
+  +process_dialog_choice(choice: str, npc: NPC)
+}
+
+class TradeManager {
+  +initiate_trade(player: Player, npc: NPC)
+  +process_transaction(item: Item, is_buying: bool)
+  +finalize_trade()
 }
 
 Game "1" -- "1" Player
 Game "1" -- "*" Faction
 Game "1" -- "*" Location
+Game "1" -- "*" NPC
+Game "1" -- "1" CombatManager
+Game "1" -- "1" QuestManager
+Game "1" -- "1" DialogManager
+Game "1" -- "1" TradeManager
 Player "1" -- "1" Dragon
-Player "1" -- "*" Item
+Player "1" -- "1" Inventory
 Player "0..*" -- "0..*" Faction
 Faction "1" -- "*" Mission
 Player "1" -- "1" Location
 Player "0..1" -- "0..1" Mission
+NPC "1" -- "1" Inventory
+Enemy "1" -- "*" Item
+Inventory "1" -- "*" Item
 @enduml
