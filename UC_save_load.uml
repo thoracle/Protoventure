@@ -1,0 +1,48 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Save Manager" as SaveMgr
+participant "File System" as FileSys
+participant "Player Data" as PlayerData
+participant "World State" as WorldState
+
+' Saving the game
+Player -> Game: Request to save game
+activate Game
+Game -> SaveMgr: Initiate save process
+activate SaveMgr
+
+SaveMgr -> PlayerData: Request player data
+PlayerData --> SaveMgr: Return player data
+SaveMgr -> WorldState: Request world state
+WorldState --> SaveMgr: Return world state
+
+SaveMgr -> SaveMgr: Serialize game data
+SaveMgr -> FileSys: Write save file
+FileSys --> SaveMgr: Confirm file written
+
+SaveMgr --> Game: Save process complete
+Game --> Player: Confirm game saved
+
+deactivate SaveMgr
+
+' Loading the game
+Player -> Game: Request to load game
+Game -> SaveMgr: Initiate load process
+activate SaveMgr
+
+SaveMgr -> FileSys: Read save file
+FileSys --> SaveMgr: Return save file data
+
+SaveMgr -> SaveMgr: Deserialize game data
+
+SaveMgr -> PlayerData: Restore player data
+SaveMgr -> WorldState: Restore world state
+
+SaveMgr --> Game: Load process complete
+Game -> Game: Update game state
+Game --> Player: Confirm game loaded
+
+deactivate SaveMgr
+deactivate Game
+@enduml
