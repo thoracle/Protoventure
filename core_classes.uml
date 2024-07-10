@@ -2,25 +2,22 @@
 skinparam classAttributeIconSize 0
 
 class Game {
-  +current_location: Location
-  +player: Player
-  +factions: List[Faction]
-  +npcs: List[NPC]
-  +combat_manager: CombatManager
-  +quest_manager: QuestManager
-  +dialog_manager: DialogManager
-  +trade_manager: TradeManager
   +start_game()
-  +create_character()
-  +bond_with_dragon()
   +process_command(command: str)
-  +move_to_location(location: Location)
-  +explore_location()
-  +discover_new_location()
-  +initiate_combat(enemy: Enemy)
-  +interact_with_npc(npc: NPC)
   +save_game()
   +load_game()
+  +quit_game()
+  +pause_game()
+  +resume_game()
+}
+
+class StateManager {
+  +current_state: GameState
+  +initialize_new_game()
+  +prepare_for_quit()
+  +pause_game_state()
+  +resume_game_state()
+  +update_game_state()
 }
 
 class Player {
@@ -29,21 +26,13 @@ class Player {
   +level: int
   +experience: int
   +stats: Dict[str, int]
-  +abilities: List[Ability]
-  +dragon: Dragon
   +inventory: Inventory
-  +faction_standings: Dict[Faction, int]
   +current_location: Location
-  +current_mission: Mission
+  +faction_standings: Dict[Faction, int]
   +distribute_initial_stats()
   +level_up()
-  +learn_ability(ability: Ability)
-  +use_ability(ability: Ability)
-  +ride_dragon()
-  +dismount_dragon()
-  +view_faction_standings()
-  +accept_mission(mission: Mission)
-  +complete_mission(mission: Mission)
+  +gain_experience(amount: int)
+  +update_faction_standing(faction: Faction, change: int)
 }
 
 class Dragon {
@@ -51,15 +40,20 @@ class Dragon {
   +color: str
   +level: int
   +abilities: List[Ability]
-  +training_level: int
-  +is_rideable: bool
+  +gear: List[DragonGear]
+  +appearance: DragonAppearance
   +bond_with_player(player: Player)
-  +set_name(name: str)
   +use_ability(ability: Ability)
-  +train(focus: str)
+  +equip_gear(gear: DragonGear)
+  +change_appearance(appearance: DragonAppearance)
   +level_up()
-  +mount_player()
-  +dismount_player()
+}
+
+class DragonRidingManager {
+  +mount_dragon(player: Player, dragon: Dragon)
+  +dismount_dragon(player: Player, dragon: Dragon)
+  +process_flight_input(input: str)
+  +use_dragon_ability_while_flying(ability: Ability)
 }
 
 class Location {
@@ -69,35 +63,32 @@ class Location {
   +npcs: List[NPC]
   +items: List[Item]
   +enemies: List[Enemy]
-  +get_connected_locations()
-  +get_details()
-  +discover_location() -> Location
+  +weather: Weather
+  +get_available_actions()
   +add_item(item: Item)
   +remove_item(item: Item)
+  +update_weather(weather: Weather)
 }
 
 class Faction {
   +name: str
   +description: str
-  +missions: List[Mission]
-  +joining_requirements: Dict[str, int]
-  +get_available_missions()
-  +add_player(player: Player)
-  +remove_player(player: Player)
+  +quests: List[Quest]
+  +get_player_standing(player: Player): int
   +update_player_standing(player: Player, change: int)
+  +get_available_quests(player: Player): List[Quest]
 }
 
-class Mission {
+class Quest {
   +title: str
   +description: str
   +objectives: List[Objective]
-  +reward: Reward
+  +rewards: List[Reward]
   +required_standing: int
   +is_completed: bool
-  +faction: Faction
   +assign_to_player(player: Player)
-  +complete_mission()
-  +check_completion_status()
+  +update_progress(objective: Objective)
+  +complete_quest()
 }
 
 class Inventory {
@@ -106,7 +97,6 @@ class Inventory {
   +add_item(item: Item)
   +remove_item(item: Item)
   +use_item(item: Item)
-  +get_items()
 }
 
 class Item {
@@ -119,72 +109,91 @@ class Item {
 class Ability {
   +name: str
   +description: str
-  +effect: str
-  +use(target: Any)
+  +use(user: Any, target: Any)
 }
 
 class NPC {
   +name: str
+  +faction: Faction
   +dialog: Dict[str, str]
-  +quests: List[Mission]
+  +quests: List[Quest]
   +inventory: Inventory
+  +get_interaction_options(player: Player)
   +start_dialog(player: Player)
   +offer_quest(player: Player)
   +trade_with_player(player: Player)
 }
 
-class Enemy {
-  +name: str
-  +stats: Dict[str, int]
-  +abilities: List[Ability]
-  +loot: List[Item]
-  +attack(target: Player)
-  +use_ability(ability: Ability, target: Player)
-}
-
 class CombatManager {
   +initiate_combat(player: Player, enemy: Enemy)
   +process_combat_round()
-  +check_combat_end()
   +resolve_combat()
 }
 
-class QuestManager {
-  +available_quests: List[Mission]
-  +active_quests: List[Mission]
-  +completed_quests: List[Mission]
-  +assign_quest(quest: Mission, player: Player)
-  +complete_quest(quest: Mission, player: Player)
-  +get_available_quests(player: Player)
+class CraftingManager {
+  +recipes: List[Recipe]
+  +craft_item(player: Player, recipe: Recipe)
+  +gather_resource(player: Player, resource: Resource)
+  +learn_recipe(player: Player, recipe: Recipe)
+  +dismantle_item(player: Player, item: Item)
 }
 
-class DialogManager {
-  +start_dialog(player: Player, npc: NPC)
-  +get_dialog_options(npc: NPC)
-  +process_dialog_choice(choice: str, npc: NPC)
+class WeatherManager {
+  +current_weather: Weather
+  +update_weather(location: Location)
+  +apply_weather_effects(player: Player, location: Location)
 }
 
-class TradeManager {
-  +initiate_trade(player: Player, npc: NPC)
-  +process_transaction(item: Item, is_buying: bool)
-  +finalize_trade()
+class TimeManager {
+  +current_time: DateTime
+  +update_time()
+  +check_time_based_events()
 }
 
+class FastTravelManager {
+  +travel_points: List[Location]
+  +unlock_travel_point(location: Location)
+  +fast_travel(player: Player, destination: Location)
+}
+
+class DragonCustomizationManager {
+  +available_appearances: List[DragonAppearance]
+  +available_gear: List[DragonGear]
+  +change_dragon_appearance(dragon: Dragon, appearance: DragonAppearance)
+  +equip_dragon_gear(dragon: Dragon, gear: DragonGear)
+}
+
+class SaveManager {
+  +save_game(filename: str)
+  +load_game(filename: str)
+  +auto_save()
+}
+
+class UIManager {
+  +current_interface: Interface
+  +load_interface(interface: Interface)
+  +update_display()
+  +handle_user_input(input: str)
+}
+
+Game "1" -- "1" StateManager
 Game "1" -- "1" Player
-Game "1" -- "*" Faction
-Game "1" -- "*" Location
-Game "1" -- "*" NPC
+Game "1" -- "1" DragonRidingManager
 Game "1" -- "1" CombatManager
-Game "1" -- "1" QuestManager
-Game "1" -- "1" DialogManager
-Game "1" -- "1" TradeManager
+Game "1" -- "1" CraftingManager
+Game "1" -- "1" WeatherManager
+Game "1" -- "1" TimeManager
+Game "1" -- "1" FastTravelManager
+Game "1" -- "1" DragonCustomizationManager
+Game "1" -- "1" SaveManager
+Game "1" -- "1" UIManager
 Player "1" -- "1" Dragon
 Player "1" -- "1" Inventory
-Player "0..*" -- "0..*" Faction
-Faction "1" -- "*" Mission
 Player "1" -- "1" Location
-Player "0..1" -- "0..1" Mission
+Player "1" -- "*" Faction
+Faction "1" -- "*" Quest
+Location "1" -- "*" NPC
+Location "1" -- "*" Item
+Location "1" -- "*" Enemy
 NPC "1" -- "1" Inventory
-Enemy "1" -- "*" Item
-Inventory "1" -- "*" Item
 @enduml
