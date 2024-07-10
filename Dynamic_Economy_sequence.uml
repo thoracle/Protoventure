@@ -1,0 +1,71 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Economy Manager" as EconMgr
+participant "Market" as Market
+participant "Inventory" as Inv
+participant "Player Character" as PlayerChar
+participant "NPC Trader" as NPCTrader
+participant "UI Manager" as UIMgr
+participant "World Events Manager" as WorldEvents
+
+' Regular economy update
+Game -> EconMgr: Trigger economy update
+activate EconMgr
+EconMgr -> Market: Get current market state
+Market --> EconMgr: Return market data
+EconMgr -> WorldEvents: Get recent events
+WorldEvents --> EconMgr: Return event data
+EconMgr -> EconMgr: Calculate price fluctuations
+EconMgr -> Market: Update item prices
+Market --> EconMgr: Confirm price updates
+
+' Player trading
+Player -> Game: Request trade with NPC
+Game -> NPCTrader: Initiate trade
+NPCTrader -> Market: Get current prices
+Market --> NPCTrader: Return price list
+NPCTrader -> UIMgr: Display trade interface
+UIMgr --> Player: Show available trades
+
+' Buying item
+Player -> Game: Buy item
+Game -> NPCTrader: Process purchase
+NPCTrader -> Market: Update item quantity
+Market --> NPCTrader: Confirm quantity update
+NPCTrader -> PlayerChar: Deduct currency
+NPCTrader -> Inv: Add item to inventory
+Inv --> NPCTrader: Confirm item added
+NPCTrader -> UIMgr: Update trade interface
+UIMgr --> Player: Show updated inventory and currency
+
+' Selling item
+Player -> Game: Sell item
+Game -> NPCTrader: Process sale
+NPCTrader -> Market: Update item quantity
+Market --> NPCTrader: Confirm quantity update
+NPCTrader -> PlayerChar: Add currency
+NPCTrader -> Inv: Remove item from inventory
+Inv --> NPCTrader: Confirm item removed
+NPCTrader -> UIMgr: Update trade interface
+UIMgr --> Player: Show updated inventory and currency
+
+' Player affecting economy
+Player -> Game: Perform economy-affecting action
+Game -> WorldEvents: Register player action
+WorldEvents -> EconMgr: Notify of economic impact
+EconMgr -> Market: Adjust affected item prices
+Market --> EconMgr: Confirm price adjustments
+
+' Rare item discovery
+Game -> WorldEvents: Trigger rare item event
+WorldEvents -> EconMgr: Notify of rare item discovery
+EconMgr -> Market: Add rare item to market
+Market --> EconMgr: Confirm item addition
+EconMgr -> UIMgr: Notify of rare item availability
+UIMgr --> Player: Display rare item notification
+
+EconMgr --> Game: Economy update complete
+deactivate EconMgr
+
+@enduml
