@@ -1,0 +1,64 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Player Character" as PlayerChar
+participant Dragon
+participant "Experience Manager" as ExpMgr
+participant "Level Manager" as LvlMgr
+
+' Gaining Experience
+Player -> Game: Complete action (e.g., quest, combat)
+activate Game
+Game -> ExpMgr: Calculate earned experience
+ExpMgr --> Game: Return experience amount
+Game -> PlayerChar: Add experience
+PlayerChar -> PlayerChar: Update total experience
+Game --> Player: Display earned experience
+
+' Leveling Up (Player Character)
+PlayerChar -> LvlMgr: Check for level up
+alt Level Up Available
+    LvlMgr --> PlayerChar: Confirm level up
+    PlayerChar -> PlayerChar: Increase level
+    Game -> Player: Notify of level up
+    Game -> Player: Display available stat improvements
+    Player -> Game: Choose stat improvements
+    Game -> PlayerChar: Apply stat improvements
+    Game --> Player: Confirm stat improvements
+else No Level Up
+    LvlMgr --> PlayerChar: No level up available
+end
+
+' Improving Dragon
+Player -> Game: Request dragon training
+Game -> Dragon: Start training session
+Dragon -> LvlMgr: Check for ability improvements
+alt Improvement Available
+    LvlMgr --> Dragon: Confirm improvement available
+    Game --> Player: Display available dragon improvements
+    Player -> Game: Choose dragon improvement
+    Game -> Dragon: Apply improvement
+    Dragon -> Dragon: Enhance ability
+    Game --> Player: Confirm dragon improvement
+else No Improvement Available
+    LvlMgr --> Dragon: No improvements available
+    Game --> Player: Inform no improvements available
+end
+
+' Learning New Abilities
+Player -> Game: Request to learn new ability
+Game -> PlayerChar: Check ability requirements
+alt Requirements Met
+    PlayerChar --> Game: Confirm requirements met
+    Game --> Player: Display available new abilities
+    Player -> Game: Choose new ability
+    Game -> PlayerChar: Learn new ability
+    PlayerChar -> PlayerChar: Add ability to skillset
+    Game --> Player: Confirm new ability learned
+else Requirements Not Met
+    PlayerChar --> Game: Requirements not met
+    Game --> Player: Inform of unmet requirements
+end
+
+deactivate Game
+@enduml
