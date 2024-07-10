@@ -15,6 +15,8 @@ Here's a brief explanation of each class:
 6. Mission: Quests or tasks provided by factions.
 7. Item: Objects the player can collect and use.
 
+> Let’s enumerate the core use cases for the game​​​​​​​​​​​​​​​​ formatted as “actor takes an action on target object” when possible​​​​​​​​​​​​​​​​.
+
 Use Cases:
 
 1. Player Creation and Dragon Bonding
