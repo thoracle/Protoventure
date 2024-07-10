@@ -1,0 +1,79 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Ecosystem Manager" as EcoMgr
+participant "Wildlife Manager" as WildlifeMgr
+participant "Environment Manager" as EnvMgr
+participant "Weather Manager" as WeatherMgr
+participant "Location" as Location
+participant "Animal" as Animal
+participant "Plant" as Plant
+participant "UI Manager" as UIMgr
+
+' Regular ecosystem update
+Game -> EcoMgr: Trigger ecosystem update
+activate EcoMgr
+EcoMgr -> Location: Get current environmental data
+Location --> EcoMgr: Return environmental state
+EcoMgr -> WeatherMgr: Get current weather
+WeatherMgr --> EcoMgr: Return weather conditions
+EcoMgr -> WildlifeMgr: Update animal populations
+WildlifeMgr -> Animal: Simulate animal behaviors
+Animal --> WildlifeMgr: Return behavior outcomes
+WildlifeMgr --> EcoMgr: Population changes
+EcoMgr -> EnvMgr: Update plant growth
+EnvMgr -> Plant: Simulate plant life cycles
+Plant --> EnvMgr: Return growth data
+EnvMgr --> EcoMgr: Vegetation changes
+
+' Player observing wildlife
+Player -> Game: Observe surroundings
+Game -> WildlifeMgr: Request visible wildlife
+WildlifeMgr -> Location: Get animals in area
+Location --> WildlifeMgr: Return local animals
+WildlifeMgr -> UIMgr: Display wildlife information
+UIMgr --> Player: Show observable animals
+
+' Player interacting with ecosystem
+Player -> Game: Interact with environment
+Game -> EcoMgr: Process player action
+EcoMgr -> WildlifeMgr: Update affected species
+WildlifeMgr -> Animal: Adjust behavior/population
+Animal --> WildlifeMgr: Confirm changes
+EcoMgr -> EnvMgr: Update affected vegetation
+EnvMgr -> Plant: Modify growth/distribution
+Plant --> EnvMgr: Confirm changes
+EcoMgr -> UIMgr: Display interaction effects
+UIMgr --> Player: Show environmental changes
+
+' Predator-prey interaction
+EcoMgr -> WildlifeMgr: Simulate predator-prey dynamics
+WildlifeMgr -> Animal: Initiate hunting behavior
+Animal -> Animal: Simulate chase and capture
+Animal --> WildlifeMgr: Report interaction outcome
+WildlifeMgr -> WildlifeMgr: Update population numbers
+WildlifeMgr --> EcoMgr: Population balance changes
+
+' Seasonal changes affecting ecosystem
+Game -> WeatherMgr: Trigger season change
+WeatherMgr -> EcoMgr: Notify of seasonal shift
+EcoMgr -> WildlifeMgr: Adjust animal behaviors
+WildlifeMgr -> Animal: Modify seasonal patterns
+Animal --> WildlifeMgr: Confirm behavior changes
+EcoMgr -> EnvMgr: Update plant life cycles
+EnvMgr -> Plant: Adjust growth patterns
+Plant --> EnvMgr: Confirm seasonal adaptations
+EcoMgr -> UIMgr: Update ecosystem visuals
+UIMgr --> Player: Display seasonal changes
+
+' Rare species event
+EcoMgr -> WildlifeMgr: Trigger rare species appearance
+WildlifeMgr -> Location: Introduce rare animal
+Location --> WildlifeMgr: Confirm species added
+WildlifeMgr -> UIMgr: Notify of rare species
+UIMgr --> Player: Alert about rare animal sighting
+
+EcoMgr --> Game: Ecosystem update complete
+deactivate EcoMgr
+
+@enduml
