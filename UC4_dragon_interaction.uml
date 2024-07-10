@@ -1,0 +1,49 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant Dragon
+participant "Current Location" as Location
+
+' Riding the dragon
+Player -> Game: Request to ride dragon
+activate Game
+Game -> Dragon: Check if rideable
+Dragon --> Game: Confirm rideable status
+alt Dragon is rideable
+    Game -> Dragon: Mount player
+    Dragon --> Game: Player mounted
+    Game -> Location: Update player position
+    Location --> Game: Position updated
+    Game --> Player: Confirm dragon mounted
+else Dragon not rideable
+    Game --> Player: Inform dragon can't be ridden
+end
+
+' Training the dragon
+Player -> Game: Request to train dragon
+Game -> Dragon: Start training session
+activate Dragon
+Dragon --> Game: Training options
+Game --> Player: Display training options
+Player -> Game: Select training focus
+Game -> Dragon: Apply training
+Dragon --> Game: Training results
+Game --> Player: Display training progress
+deactivate Dragon
+
+' Using dragon abilities
+Player -> Game: Request to use dragon ability
+Game -> Dragon: Get available abilities
+Dragon --> Game: List of abilities
+Game --> Player: Display available abilities
+Player -> Game: Select ability to use
+Game -> Dragon: Use selected ability
+activate Dragon
+Dragon -> Location: Apply ability effect
+Location --> Dragon: Effect result
+Dragon --> Game: Ability use result
+Game --> Player: Display ability outcome
+deactivate Dragon
+
+deactivate Game
+@enduml
