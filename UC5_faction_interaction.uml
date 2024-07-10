@@ -1,0 +1,46 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant Faction
+participant Mission
+
+' Joining a faction
+Player -> Game: Request to join faction
+activate Game
+Game -> Faction: Check joining requirements
+Faction --> Game: Return requirements
+alt Requirements met
+    Game -> Faction: Add player to faction
+    Faction --> Game: Confirm player added
+    Game -> Game: Update player's faction status
+    Game --> Player: Confirm faction joined
+else Requirements not met
+    Game --> Player: Inform of unmet requirements
+end
+
+' Completing a task for a faction
+Player -> Game: Request available faction missions
+Game -> Faction: Get available missions
+Faction --> Game: Return list of missions
+Game --> Player: Display available missions
+
+Player -> Game: Select mission to undertake
+Game -> Mission: Assign mission to player
+Mission --> Game: Confirm mission assignment
+Game --> Player: Provide mission details
+
+Player -> Game: Complete mission objective
+Game -> Mission: Check mission completion
+Mission --> Game: Confirm completion status
+Game -> Faction: Update player standing
+Faction --> Game: Return new standing
+Game -> Game: Update player's faction standing
+Game --> Player: Inform of mission completion and standing change
+
+' Viewing faction standings
+Player -> Game: Request to view faction standings
+Game -> Game: Retrieve player's faction standings
+Game --> Player: Display faction standings
+
+deactivate Game
+@enduml
