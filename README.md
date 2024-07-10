@@ -91,5 +91,9 @@ Use Cases:
     - Player changes dragon's appearance
     - Player equips dragon with gear
 
-> Let’s create a PlantUML sequence diagram for uc1​​​​​​​
+> Let’s create a PlantUML sequence diagram for uc1​​ and each use case above.
+
+> next update our uml class diagram to include UC1 and UC2​​​​​ and the other use cases.
+
+
 
