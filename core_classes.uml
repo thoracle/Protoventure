@@ -7,46 +7,30 @@ class Game {
   +save_game()
   +load_game()
   +quit_game()
-  +pause_game()
-  +resume_game()
-}
-
-class StateManager {
-  +current_state: GameState
-  +initialize_new_game()
-  +prepare_for_quit()
-  +pause_game_state()
-  +resume_game_state()
-  +update_game_state()
+  +update()
 }
 
 class Player {
   +name: str
-  +character_class: str
   +level: int
   +experience: int
-  +stats: Dict[str, int]
   +inventory: Inventory
-  +current_location: Location
+  +skills: Dict[str, Skill]
   +faction_standings: Dict[Faction, int]
-  +distribute_initial_stats()
+  +current_location: Location
+  +perform_action(action: str)
   +level_up()
-  +gain_experience(amount: int)
   +update_faction_standing(faction: Faction, change: int)
 }
 
 class Dragon {
   +name: str
-  +color: str
   +level: int
   +abilities: List[Ability]
-  +gear: List[DragonGear]
   +appearance: DragonAppearance
-  +bond_with_player(player: Player)
   +use_ability(ability: Ability)
-  +equip_gear(gear: DragonGear)
-  +change_appearance(appearance: DragonAppearance)
   +level_up()
+  +change_appearance(appearance: DragonAppearance)
 }
 
 class DragonRidingManager {
@@ -62,21 +46,20 @@ class Location {
   +connected_locations: List[Location]
   +npcs: List[NPC]
   +items: List[Item]
-  +enemies: List[Enemy]
+  +resources: List[Resource]
   +weather: Weather
   +get_available_actions()
-  +add_item(item: Item)
-  +remove_item(item: Item)
   +update_weather(weather: Weather)
 }
 
 class Faction {
   +name: str
   +description: str
-  +quests: List[Quest]
+  +relations: Dict[Faction, int]
   +get_player_standing(player: Player): int
   +update_player_standing(player: Player, change: int)
-  +get_available_quests(player: Player): List[Quest]
+  +declare_war(other_faction: Faction)
+  +make_peace(other_faction: Faction)
 }
 
 class Quest {
@@ -84,7 +67,6 @@ class Quest {
   +description: str
   +objectives: List[Objective]
   +rewards: List[Reward]
-  +required_standing: int
   +is_completed: bool
   +assign_to_player(player: Player)
   +update_progress(objective: Objective)
@@ -115,12 +97,10 @@ class Ability {
 class NPC {
   +name: str
   +faction: Faction
-  +dialog: Dict[str, str]
+  +dialogue: Dict[str, str]
   +quests: List[Quest]
   +inventory: Inventory
-  +get_interaction_options(player: Player)
-  +start_dialog(player: Player)
-  +offer_quest(player: Player)
+  +interact(player: Player)
   +trade_with_player(player: Player)
 }
 
@@ -133,9 +113,13 @@ class CombatManager {
 class CraftingManager {
   +recipes: List[Recipe]
   +craft_item(player: Player, recipe: Recipe)
-  +gather_resource(player: Player, resource: Resource)
-  +learn_recipe(player: Player, recipe: Recipe)
   +dismantle_item(player: Player, item: Item)
+}
+
+class AlchemyManager {
+  +potions: List[Potion]
+  +brew_potion(player: Player, recipe: Recipe)
+  +discover_new_recipe(player: Player)
 }
 
 class WeatherManager {
@@ -150,50 +134,85 @@ class TimeManager {
   +check_time_based_events()
 }
 
-class FastTravelManager {
-  +travel_points: List[Location]
-  +unlock_travel_point(location: Location)
-  +fast_travel(player: Player, destination: Location)
+class EconomyManager {
+  +market_prices: Dict[Item, int]
+  +update_prices()
+  +process_trade(buyer: Any, seller: Any, item: Item, quantity: int)
 }
 
-class DragonCustomizationManager {
-  +available_appearances: List[DragonAppearance]
-  +available_gear: List[DragonGear]
-  +change_dragon_appearance(dragon: Dragon, appearance: DragonAppearance)
-  +equip_dragon_gear(dragon: Dragon, gear: DragonGear)
+class WorldGenerator {
+  +generate_new_world()
+  +generate_area_details(location: Location)
 }
 
-class SaveManager {
-  +save_game(filename: str)
-  +load_game(filename: str)
-  +auto_save()
+class EcosystemManager {
+  +update_ecosystem(location: Location)
+  +simulate_wildlife_behavior()
+  +update_plant_growth()
+}
+
+class FactionManager {
+  +factions: List[Faction]
+  +update_faction_relations()
+  +process_faction_event(event: FactionEvent)
+}
+
+class SkillManager {
+  +update_skill_experience(player: Player, skill: Skill, exp: int)
+  +check_skill_level_up(player: Player, skill: Skill)
+  +apply_skill_decay()
+}
+
+class StoryManager {
+  +story_state: Dict[str, Any]
+  +update_story_state(event: StoryEvent)
+  +generate_dynamic_quest()
+  +process_player_choice(choice: str)
+}
+
+class QuestManager {
+  +available_quests: List[Quest]
+  +active_quests: List[Quest]
+  +generate_quest(context: Dict[str, Any])
+  +update_quest_progress(player: Player, quest: Quest)
+}
+
+class DialogueSystem {
+  +initiate_dialogue(player: Player, npc: NPC)
+  +process_dialogue_choice(choice: str)
 }
 
 class UIManager {
   +current_interface: Interface
-  +load_interface(interface: Interface)
   +update_display()
   +handle_user_input(input: str)
 }
 
-Game "1" -- "1" StateManager
 Game "1" -- "1" Player
 Game "1" -- "1" DragonRidingManager
 Game "1" -- "1" CombatManager
 Game "1" -- "1" CraftingManager
+Game "1" -- "1" AlchemyManager
 Game "1" -- "1" WeatherManager
 Game "1" -- "1" TimeManager
-Game "1" -- "1" FastTravelManager
-Game "1" -- "1" DragonCustomizationManager
-Game "1" -- "1" SaveManager
+Game "1" -- "1" EconomyManager
+Game "1" -- "1" WorldGenerator
+Game "1" -- "1" EcosystemManager
+Game "1" -- "1" FactionManager
+Game "1" -- "1" SkillManager
+Game "1" -- "1" StoryManager
+Game "1" -- "1" QuestManager
+Game "1" -- "1" DialogueSystem
 Game "1" -- "1" UIManager
+
 Player "1" -- "1" Dragon
 Player "1" -- "1" Inventory
 Player "1" -- "1" Location
 Player "1" -- "*" Faction
+Player "1" -- "*" Skill
 Faction "1" -- "*" Quest
 Location "1" -- "*" NPC
 Location "1" -- "*" Item
-Location "1" -- "*" Enemy
+Location "1" -- "*" Resource
 NPC "1" -- "1" Inventory
 @enduml
