@@ -15,3 +15,76 @@ Here's a brief explanation of each class:
 6. Mission: Quests or tasks provided by factions.
 7. Item: Objects the player can collect and use.
 
+Use Cases:
+
+1. Player Creation and Dragon Bonding
+   - Player creates a character
+   - Player bonds with a dragon
+
+2. World Exploration
+   - Player moves to a location
+   - Player explores a location
+   - Player discovers a new location
+
+3. Dragon Interaction
+   - Player rides the dragon
+   - Player trains the dragon
+   - Player commands dragon to use an ability
+
+4. Faction Interaction
+   - Player joins a faction
+   - Player completes a task for a faction
+   - Player views faction standings
+
+5. Mission System
+   - Player views available missions
+   - Player accepts a mission from a faction
+   - Player completes a mission
+   - Game awards player with mission rewards
+
+6. Inventory Management
+   - Player collects an item
+   - Player uses an item
+   - Player drops an item
+   - Player views inventory
+
+7. Combat System
+   - Player engages an enemy in combat
+   - Player attacks an enemy
+   - Player commands dragon to attack an enemy
+   - Player defeats an enemy
+
+8. Character Progression
+   - Player gains experience points
+   - Player levels up
+   - Player improves dragon's ability
+
+9. NPC Interaction
+   - Player talks to an NPC
+   - Player receives information from an NPC
+   - Player trades with an NPC
+
+10. Save/Load System
+    - Player saves the game
+    - Player loads a saved game
+
+11. Game State Management
+    - Player starts a new game
+    - Player quits the game
+    - Player views game statistics
+
+12. Fast Travel
+    - Player unlocks a fast travel point
+    - Player fast travels to a location
+
+13. Crafting System
+    - Player gathers a resource
+    - Player crafts an item
+
+14. Weather and Time System
+    - Game changes weather conditions
+    - Game updates time of day
+
+15. Dragon Customization
+    - Player changes dragon's appearance
+    - Player equips dragon with gear
