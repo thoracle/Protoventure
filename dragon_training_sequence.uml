@@ -1,0 +1,56 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Dragon Training Manager" as DTM
+participant "Dragon" as Dragon
+participant "Player Character" as PlayerChar
+participant "Experience Manager" as ExpMgr
+participant "UI Manager" as UIMgr
+
+' Initiating training session
+Player -> Game: Request dragon training
+activate Game
+Game -> DTM: Start training session
+activate DTM
+DTM -> Dragon: Get current stats and abilities
+Dragon --> DTM: Return stats and abilities
+DTM -> UIMgr: Display training options
+UIMgr --> Player: Show training interface
+
+' Choosing training focus
+Player -> Game: Select training focus
+Game -> DTM: Process training selection
+DTM -> DTM: Calculate training difficulty and duration
+
+' Training process
+loop For duration of training
+    DTM -> Dragon: Improve targeted stat/ability
+    Dragon --> DTM: Confirm improvement
+    DTM -> ExpMgr: Award training experience
+    ExpMgr -> PlayerChar: Update player experience
+    DTM -> UIMgr: Update training progress
+    UIMgr --> Player: Show progress update
+end
+
+' Training completion
+DTM -> Dragon: Finalize stat/ability improvements
+Dragon --> DTM: Confirm final stats
+DTM -> ExpMgr: Award completion bonus
+ExpMgr -> PlayerChar: Update player experience
+DTM -> UIMgr: Display training results
+UIMgr --> Player: Show final improvements
+
+' Check for new ability unlock
+DTM -> Dragon: Check for ability unlock
+alt New ability unlocked
+    Dragon -> Dragon: Add new ability
+    DTM -> UIMgr: Notify of new ability
+    UIMgr --> Player: Display new ability unlock
+end
+
+DTM --> Game: Training session complete
+Game --> Player: End training session
+
+deactivate DTM
+deactivate Game
+@enduml
