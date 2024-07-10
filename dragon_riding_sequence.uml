@@ -1,0 +1,71 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Dragon Riding Manager" as DRM
+participant "Player Character" as PlayerChar
+participant "Dragon" as Dragon
+participant "World" as World
+participant "Combat System" as Combat
+
+' Mounting the dragon
+Player -> Game: Request to mount dragon
+activate Game
+Game -> DRM: Initiate mounting process
+activate DRM
+DRM -> Dragon: Check if rideable
+Dragon --> DRM: Confirm rideable status
+DRM -> PlayerChar: Update position
+PlayerChar --> DRM: Position updated
+DRM -> Dragon: Set rider
+Dragon --> DRM: Rider set
+DRM --> Game: Mounting complete
+Game --> Player: Display mounted view
+
+' Flying
+Player -> Game: Input flight controls
+Game -> DRM: Process flight input
+DRM -> Dragon: Update flight path
+Dragon -> World: Check for obstacles
+World --> Dragon: Return obstacle data
+Dragon -> Dragon: Adjust flight path
+Dragon --> DRM: New position and orientation
+DRM -> PlayerChar: Update position
+DRM --> Game: Flight update complete
+Game --> Player: Update game view
+
+' Using dragon ability while flying
+Player -> Game: Activate dragon ability
+Game -> DRM: Process ability activation
+DRM -> Dragon: Use ability
+Dragon -> World: Apply ability effect
+World --> Dragon: Effect result
+Dragon --> DRM: Ability use complete
+DRM --> Game: Ability effect resolved
+Game --> Player: Display ability effect
+
+' Engaging in aerial combat
+Player -> Game: Engage enemy while flying
+Game -> Combat: Initiate aerial combat
+Combat -> DRM: Get dragon combat stats
+DRM --> Combat: Return combat stats
+Combat -> Combat: Resolve combat round
+Combat --> Game: Combat round result
+Game --> Player: Display combat outcome
+
+' Dismounting the dragon
+Player -> Game: Request to dismount
+Game -> DRM: Initiate dismounting process
+DRM -> World: Check for safe landing spot
+World --> DRM: Confirm landing spot
+DRM -> Dragon: Land at spot
+Dragon --> DRM: Landing complete
+DRM -> PlayerChar: Update position
+PlayerChar --> DRM: Position updated
+DRM -> Dragon: Remove rider
+Dragon --> DRM: Rider removed
+DRM --> Game: Dismounting complete
+Game --> Player: Display ground view
+
+deactivate DRM
+deactivate Game
+@enduml
