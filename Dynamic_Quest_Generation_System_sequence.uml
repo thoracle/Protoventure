@@ -1,0 +1,63 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Quest Generator" as QuestGen
+participant "World State" as WorldState
+participant "Faction Manager" as FactionMgr
+participant "Player Character" as PlayerChar
+participant "NPC Manager" as NPCMgr
+participant "Quest Manager" as QuestMgr
+participant "UI Manager" as UIMgr
+
+' Triggering quest generation
+Game -> QuestGen: Request new quest generation
+activate QuestGen
+
+' Gathering context for quest generation
+QuestGen -> WorldState: Get current world state
+WorldState --> QuestGen: Return world state
+QuestGen -> FactionMgr: Get faction statuses
+FactionMgr --> QuestGen: Return faction information
+QuestGen -> PlayerChar: Get player stats and history
+PlayerChar --> QuestGen: Return player data
+
+' Generating quest
+QuestGen -> QuestGen: Generate quest parameters
+QuestGen -> QuestGen: Create quest objectives
+QuestGen -> QuestGen: Determine quest rewards
+
+' Selecting appropriate NPC for quest
+QuestGen -> NPCMgr: Find suitable NPC for quest
+NPCMgr --> QuestGen: Return selected NPC
+
+' Finalizing and registering quest
+QuestGen -> QuestMgr: Register new quest
+QuestMgr --> QuestGen: Confirm quest registration
+
+' Updating world state with new quest
+QuestGen -> WorldState: Update with new quest information
+WorldState --> QuestGen: Confirm update
+
+' Notifying player of new quest availability
+QuestGen -> UIMgr: Notify of new quest
+UIMgr --> Player: Display new quest notification
+
+QuestGen --> Game: Quest generation complete
+deactivate QuestGen
+
+' Player interacting with the generated quest
+Player -> Game: Approach quest-giving NPC
+Game -> NPCMgr: Initiate NPC interaction
+NPCMgr -> QuestMgr: Get available quests for NPC
+QuestMgr --> NPCMgr: Return quest information
+NPCMgr -> UIMgr: Display quest dialog
+UIMgr --> Player: Show quest details and options
+
+Player -> Game: Accept quest
+Game -> QuestMgr: Assign quest to player
+QuestMgr -> PlayerChar: Add quest to active quests
+PlayerChar --> QuestMgr: Confirm quest added
+QuestMgr -> UIMgr: Update quest log
+UIMgr --> Player: Display updated quest log
+
+@enduml
