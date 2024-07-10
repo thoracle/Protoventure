@@ -1,0 +1,56 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Player Character" as PlayerChar
+participant Dragon
+participant Enemy
+participant "Combat Manager" as CombatMgr
+
+Player -> Game: Encounter enemy
+activate Game
+Game -> CombatMgr: Initialize combat
+activate CombatMgr
+
+loop Until combat ends
+    CombatMgr -> Game: Get combat options
+    Game --> Player: Display combat options
+    
+    alt Player attacks
+        Player -> Game: Choose attack
+        Game -> PlayerChar: Execute attack
+        PlayerChar -> Enemy: Apply damage
+        Enemy --> CombatMgr: Report health status
+    else Player uses ability
+        Player -> Game: Choose ability
+        Game -> PlayerChar: Use ability
+        PlayerChar -> Enemy: Apply ability effect
+        Enemy --> CombatMgr: Report effect result
+    else Player commands dragon
+        Player -> Game: Choose dragon action
+        Game -> Dragon: Execute action
+        Dragon -> Enemy: Apply dragon ability/attack
+        Enemy --> CombatMgr: Report effect result
+    else Enemy acts
+        CombatMgr -> Enemy: Determine action
+        Enemy -> PlayerChar: Execute action
+        PlayerChar --> CombatMgr: Report health status
+    end
+    
+    CombatMgr -> CombatMgr: Check combat end conditions
+end
+
+CombatMgr -> Game: Report combat outcome
+deactivate CombatMgr
+
+alt Player wins
+    Game -> Player: Award experience and loot
+    Game -> PlayerChar: Update stats
+else Player loses
+    Game -> Player: Display defeat message
+    Game -> Game: Handle player defeat (e.g., respawn)
+end
+
+Game --> Player: End combat sequence
+
+deactivate Game
+@enduml
