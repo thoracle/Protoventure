@@ -18,9 +18,12 @@ class Player {
   +skills: Dict[str, Skill]
   +faction_standings: Dict[Faction, int]
   +current_location: Location
+  +guild: Guild
   +perform_action(action: str)
   +level_up()
   +update_faction_standing(faction: Faction, change: int)
+  +join_guild(guild: Guild)
+  +leave_guild()
 }
 
 class Dragon {
@@ -188,6 +191,41 @@ class UIManager {
   +handle_user_input(input: str)
 }
 
+class Guild {
+  +name: str
+  +level: int
+  +experience: int
+  +members: List[Player]
+  +leader: Player
+  +quests: List[GuildQuest]
+  +add_member(player: Player)
+  +remove_member(player: Player)
+  +assign_leader(player: Player)
+  +level_up()
+  +start_guild_quest(quest: GuildQuest)
+  +complete_guild_quest(quest: GuildQuest)
+}
+
+class GuildQuest {
+  +title: str
+  +description: str
+  +requirements: Dict[str, int]
+  +rewards: Dict[str, int]
+  +progress: Dict[str, int]
+  +is_completed: bool
+  +update_progress(contribution: Dict[str, int])
+  +check_completion()
+}
+
+class GuildManager {
+  +guilds: List[Guild]
+  +create_guild(name: str, leader: Player): Guild
+  +disband_guild(guild: Guild)
+  +process_join_request(player: Player, guild: Guild)
+  +generate_guild_quests(guild: Guild): List[GuildQuest]
+  +update_guild_rankings()
+}
+
 Game "1" -- "1" Player
 Game "1" -- "1" DragonRidingManager
 Game "1" -- "1" CombatManager
@@ -204,6 +242,7 @@ Game "1" -- "1" StoryManager
 Game "1" -- "1" QuestManager
 Game "1" -- "1" DialogueSystem
 Game "1" -- "1" UIManager
+Game "1" -- "1" GuildManager
 
 Player "1" -- "1" Dragon
 Player "1" -- "1" Inventory
@@ -215,4 +254,10 @@ Location "1" -- "*" NPC
 Location "1" -- "*" Item
 Location "1" -- "*" Resource
 NPC "1" -- "1" Inventory
+
+GuildManager "1" -- "*" Guild
+Guild "1" -- "*" Player
+Guild "1" -- "*" GuildQuest
+Player "0..1" -- "0..1" Guild
+
 @enduml
