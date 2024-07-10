@@ -1,0 +1,90 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "World Generator" as WorldGen
+participant "Terrain Manager" as TerrainMgr
+participant "Structure Manager" as StructureMgr
+participant "NPC Population Manager" as NPCPopMgr
+participant "Resource Manager" as ResourceMgr
+participant "Player Character" as PlayerChar
+participant "UI Manager" as UIMgr
+
+' Initial world generation
+Game -> WorldGen: Generate new game world
+activate WorldGen
+WorldGen -> TerrainMgr: Generate base terrain
+TerrainMgr --> WorldGen: Return terrain data
+WorldGen -> StructureMgr: Place initial structures
+StructureMgr --> WorldGen: Return structure locations
+WorldGen -> NPCPopMgr: Generate initial NPC populations
+NPCPopMgr --> WorldGen: Return NPC data
+WorldGen -> ResourceMgr: Distribute initial resources
+ResourceMgr --> WorldGen: Return resource locations
+WorldGen --> Game: World generation complete
+Game -> UIMgr: Display new world
+UIMgr --> Player: Show generated world
+
+' Player explores new area
+Player -> Game: Move to unexplored area
+Game -> WorldGen: Generate area details
+WorldGen -> TerrainMgr: Create detailed terrain
+TerrainMgr --> WorldGen: Return detailed terrain
+WorldGen -> StructureMgr: Generate local structures
+StructureMgr --> WorldGen: Return structure data
+WorldGen -> NPCPopMgr: Populate area with NPCs
+NPCPopMgr --> WorldGen: Return NPC placements
+WorldGen -> ResourceMgr: Add local resources
+ResourceMgr --> WorldGen: Return resource data
+WorldGen --> Game: Area generation complete
+Game -> UIMgr: Reveal new area
+UIMgr --> Player: Display newly explored area
+
+' Player builds structure
+Player -> Game: Build new structure
+Game -> StructureMgr: Process structure placement
+StructureMgr -> TerrainMgr: Check terrain suitability
+TerrainMgr --> StructureMgr: Confirm suitable location
+StructureMgr -> ResourceMgr: Consume building resources
+ResourceMgr --> StructureMgr: Confirm resource use
+StructureMgr -> StructureMgr: Add structure to world
+StructureMgr --> Game: Structure built successfully
+Game -> UIMgr: Update world view
+UIMgr --> Player: Show new structure
+
+' Environmental change event
+Game -> WorldGen: Trigger environmental change
+WorldGen -> TerrainMgr: Modify terrain
+TerrainMgr --> WorldGen: Return changed terrain
+WorldGen -> ResourceMgr: Update resource distribution
+ResourceMgr --> WorldGen: Confirm resource changes
+WorldGen -> NPCPopMgr: Adjust NPC populations
+NPCPopMgr --> WorldGen: Return population shifts
+WorldGen --> Game: Environmental change complete
+Game -> UIMgr: Display world changes
+UIMgr --> Player: Show environmental effects
+
+' Player terraforming action
+Player -> Game: Perform terraforming action
+Game -> TerrainMgr: Process terrain modification
+TerrainMgr -> TerrainMgr: Alter terrain
+TerrainMgr -> ResourceMgr: Update affected resources
+ResourceMgr --> TerrainMgr: Confirm resource changes
+TerrainMgr -> StructureMgr: Check impact on structures
+StructureMgr --> TerrainMgr: Return affected structures
+TerrainMgr --> Game: Terraforming complete
+Game -> UIMgr: Update terrain display
+UIMgr --> Player: Show terraformed area
+
+' NPC settlement growth
+NPCPopMgr -> StructureMgr: Request settlement expansion
+StructureMgr -> TerrainMgr: Check for suitable area
+TerrainMgr --> StructureMgr: Confirm expansion location
+StructureMgr -> StructureMgr: Add new buildings
+StructureMgr -> NPCPopMgr: Increase local population
+NPCPopMgr --> StructureMgr: Confirm population growth
+StructureMgr --> Game: Settlement expanded
+Game -> UIMgr: Update settlement view
+UIMgr --> Player: Show expanded settlement
+
+deactivate WorldGen
+@enduml
