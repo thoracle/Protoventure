@@ -1,0 +1,78 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Faction Manager" as FactionMgr
+participant "Faction" as Faction
+participant "Quest Manager" as QuestMgr
+participant "World Event Manager" as WorldEventMgr
+participant "NPC Manager" as NPCMgr
+participant "UI Manager" as UIMgr
+participant "Player Character" as PlayerChar
+
+' Regular faction update
+Game -> FactionMgr: Trigger faction update
+activate FactionMgr
+FactionMgr -> Faction: Update internal state
+Faction --> FactionMgr: Return updated status
+FactionMgr -> FactionMgr: Recalculate inter-faction relationships
+
+' Player completing faction quest
+Player -> Game: Complete faction quest
+Game -> QuestMgr: Process quest completion
+QuestMgr -> FactionMgr: Update faction standing
+FactionMgr -> Faction: Improve player reputation
+Faction --> FactionMgr: Confirm reputation change
+FactionMgr -> PlayerChar: Update faction standings
+FactionMgr -> UIMgr: Display reputation change
+UIMgr --> Player: Show updated faction standing
+
+' World event affecting factions
+WorldEventMgr -> FactionMgr: Trigger faction-affecting event
+FactionMgr -> Faction: Apply event effects
+Faction -> Faction: Adjust internal policies
+Faction --> FactionMgr: Return policy changes
+FactionMgr -> FactionMgr: Update inter-faction relationships
+FactionMgr -> UIMgr: Notify of significant changes
+UIMgr --> Player: Display world event effects
+
+' Player negotiating between factions
+Player -> Game: Initiate faction negotiation
+Game -> FactionMgr: Start negotiation process
+FactionMgr -> Faction: Get negotiation stance
+Faction --> FactionMgr: Return initial position
+FactionMgr -> UIMgr: Display negotiation options
+UIMgr --> Player: Show dialogue choices
+
+Player -> Game: Choose negotiation approach
+Game -> FactionMgr: Process negotiation choice
+FactionMgr -> Faction: Adjust stance based on negotiation
+Faction --> FactionMgr: Return new position
+FactionMgr -> FactionMgr: Update inter-faction relationships
+FactionMgr -> UIMgr: Display negotiation results
+UIMgr --> Player: Show outcome of negotiation
+
+' Faction initiating conflict
+Faction -> FactionMgr: Declare conflict with another faction
+FactionMgr -> FactionMgr: Update faction relationships
+FactionMgr -> WorldEventMgr: Trigger conflict events
+WorldEventMgr -> QuestMgr: Generate conflict-related quests
+QuestMgr --> FactionMgr: Return new quests
+FactionMgr -> UIMgr: Notify of faction conflict
+UIMgr --> Player: Alert about new faction conflict
+
+' Player changing allegiance
+Player -> Game: Request faction change
+Game -> FactionMgr: Process allegiance change
+FactionMgr -> Faction: Leave current faction
+Faction --> FactionMgr: Confirm departure
+FactionMgr -> Faction: Join new faction
+Faction --> FactionMgr: Confirm new membership
+FactionMgr -> PlayerChar: Update faction allegiance
+FactionMgr -> FactionMgr: Recalculate faction relationships
+FactionMgr -> UIMgr: Display allegiance change
+UIMgr --> Player: Show new faction status
+
+FactionMgr --> Game: Faction update complete
+deactivate FactionMgr
+
+@enduml
