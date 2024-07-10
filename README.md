@@ -67,27 +67,6 @@ This formatted list provides a clearer picture of the actor (usually the player)
 
 > let's also update our uml use case diagram to include all of these new sequences.
 
-This updated use case diagram now includes all the major features and systems we've discussed:
-
-1. Core Gameplay: Character creation, dragon bonding, world exploration
-2. Dragon Interaction: Riding, customization
-3. Combat System
-4. Inventory Management
-5. Crafting and Alchemy Systems
-6. Faction Interactions and Negotiations
-7. Quest System
-8. Skill Development
-9. Economy and Trading
-10. Weather System
-11. Ecosystem Interaction
-12. Dynamic Storytelling
-13. World Building and Modification
-14. Time Management
-15. Recipe Discovery
-16. Dynamic Events
-17. Dialogue System
-18. Save/Load Functionality
-
 This use case diagram represents all the main functionalities (use cases) that we've identified for our dragon-riding adventure game. It shows the Player as the primary actor interacting with all these use cases.
 
 The diagram also includes some relationships between use cases:
