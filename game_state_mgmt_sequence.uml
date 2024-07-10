@@ -1,0 +1,66 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "State Manager" as StateMgr
+participant "Player Character" as PlayerChar
+participant "Save Manager" as SaveMgr
+participant "UI Manager" as UIMgr
+
+' Starting a new game
+Player -> Game: Start new game
+activate Game
+Game -> StateMgr: Initialize new game state
+activate StateMgr
+StateMgr -> PlayerChar: Create new character
+PlayerChar --> StateMgr: Character created
+StateMgr -> StateMgr: Set initial game parameters
+StateMgr --> Game: Game state initialized
+Game -> UIMgr: Load main game interface
+UIMgr --> Game: Interface loaded
+Game --> Player: Display new game start screen
+
+' Quitting the game
+Player -> Game: Request to quit game
+Game -> StateMgr: Prepare for quit
+StateMgr -> SaveMgr: Save current game state
+SaveMgr --> StateMgr: Game state saved
+StateMgr -> StateMgr: Clean up resources
+StateMgr --> Game: Ready to quit
+Game -> UIMgr: Load quit confirmation dialog
+UIMgr --> Game: Dialog loaded
+Game --> Player: Display quit confirmation
+Player -> Game: Confirm quit
+Game -> Game: Exit game
+
+' Viewing player stats and progress
+Player -> Game: Request to view stats
+Game -> StateMgr: Retrieve player stats
+StateMgr -> PlayerChar: Get current stats
+PlayerChar --> StateMgr: Return current stats
+StateMgr -> StateMgr: Compile progress data
+StateMgr --> Game: Player stats and progress
+Game -> UIMgr: Load stats interface
+UIMgr --> Game: Interface loaded
+Game --> Player: Display stats and progress
+
+' Pausing the game
+Player -> Game: Pause game
+Game -> StateMgr: Pause game state
+StateMgr -> StateMgr: Freeze game processes
+StateMgr --> Game: Game paused
+Game -> UIMgr: Load pause menu
+UIMgr --> Game: Pause menu loaded
+Game --> Player: Display pause menu
+
+' Resuming the game
+Player -> Game: Resume game
+Game -> StateMgr: Resume game state
+StateMgr -> StateMgr: Unfreeze game processes
+StateMgr --> Game: Game resumed
+Game -> UIMgr: Unload pause menu
+UIMgr --> Game: Pause menu unloaded
+Game --> Player: Return to game
+
+deactivate StateMgr
+deactivate Game
+@enduml
