@@ -90,3 +90,6 @@ Use Cases:
 15. Dragon Customization
     - Player changes dragon's appearance
     - Player equips dragon with gear
+
+> Let’s create a PlantUML sequence diagram for uc1​​​​​​​
+
