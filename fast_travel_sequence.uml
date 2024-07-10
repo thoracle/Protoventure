@@ -1,0 +1,50 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Fast Travel Manager" as FTMgr
+participant "Player Character" as PlayerChar
+participant "Dragon" as Dragon
+participant "Current Location" as CurrLoc
+participant "Destination Location" as DestLoc
+
+' Unlocking a new fast travel point
+Player -> Game: Discover new location
+activate Game
+Game -> FTMgr: Check if location is fast travel point
+activate FTMgr
+FTMgr -> FTMgr: Verify location eligibility
+alt Location is eligible
+    FTMgr -> FTMgr: Add to fast travel points
+    FTMgr --> Game: Confirm point added
+    Game --> Player: Notify fast travel point unlocked
+else Location not eligible
+    FTMgr --> Game: Not a fast travel point
+end
+deactivate FTMgr
+
+' Using fast travel
+Player -> Game: Request fast travel
+Game -> FTMgr: Get available fast travel points
+activate FTMgr
+FTMgr --> Game: Return list of fast travel points
+Game --> Player: Display available destinations
+Player -> Game: Select destination
+Game -> FTMgr: Initiate fast travel
+FTMgr -> PlayerChar: Check fast travel eligibility
+PlayerChar --> FTMgr: Return eligibility status
+alt Player is eligible
+    FTMgr -> Dragon: Initiate fast travel flight
+    Dragon -> CurrLoc: Leave current location
+    Dragon -> DestLoc: Arrive at destination
+    DestLoc --> FTMgr: Confirm arrival
+    FTMgr -> PlayerChar: Update player location
+    FTMgr --> Game: Fast travel complete
+    Game --> Player: Display arrival at new location
+else Player not eligible
+    FTMgr --> Game: Fast travel not possible
+    Game --> Player: Inform fast travel unavailable
+end
+deactivate FTMgr
+
+deactivate Game
+@enduml
