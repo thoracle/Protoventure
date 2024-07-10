@@ -12,6 +12,12 @@ class Game {
   +discover_new_location()
   +train_dragon(focus: str)
   +use_dragon_ability(ability: str)
+  +join_faction(faction: Faction)
+  +get_available_missions(faction: Faction)
+  +assign_mission(mission: Mission)
+  +complete_mission(mission: Mission)
+  +update_faction_standing(faction: Faction, change: int)
+  +get_faction_standings()
 }
 
 class Player {
@@ -22,10 +28,12 @@ class Player {
   +inventory: List[Item]
   +faction_standings: Dict[Faction, int]
   +current_location: Location
+  +current_mission: Mission
   +distribute_initial_stats()
   +level_up()
   +ride_dragon()
   +dismount_dragon()
+  +view_faction_standings()
 }
 
 class Dragon {
@@ -57,6 +65,11 @@ class Faction {
   +name: str
   +description: str
   +missions: List[Mission]
+  +joining_requirements: Dict[str, int]
+  +get_available_missions()
+  +add_player(player: Player)
+  +remove_player(player: Player)
+  +update_player_standing(player: Player, change: int)
 }
 
 class Mission {
@@ -65,12 +78,16 @@ class Mission {
   +reward: int
   +required_standing: int
   +is_completed: bool
+  +faction: Faction
+  +assign_to_player(player: Player)
   +complete_mission()
+  +check_completion_status()
 }
 
 class Item {
   +name: str
   +description: str
+  +use(player: Player)
 }
 
 Game "1" -- "1" Player
@@ -78,6 +95,8 @@ Game "1" -- "*" Faction
 Game "1" -- "*" Location
 Player "1" -- "1" Dragon
 Player "1" -- "*" Item
+Player "0..*" -- "0..*" Faction
 Faction "1" -- "*" Mission
 Player "1" -- "1" Location
+Player "0..1" -- "0..1" Mission
 @enduml
