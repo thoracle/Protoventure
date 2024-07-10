@@ -1,0 +1,74 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Weather Manager" as WeatherMgr
+participant "Environment Manager" as EnvMgr
+participant "Time Manager" as TimeMgr
+participant "Player Character" as PlayerChar
+participant "Location" as Location
+participant "Dragon" as Dragon
+participant "UI Manager" as UIMgr
+
+' Regular weather update
+Game -> TimeMgr: Update game time
+TimeMgr -> WeatherMgr: Trigger weather update
+activate WeatherMgr
+WeatherMgr -> WeatherMgr: Calculate new weather
+WeatherMgr -> Location: Apply weather effects
+Location --> WeatherMgr: Confirm weather applied
+WeatherMgr -> EnvMgr: Update environmental conditions
+EnvMgr -> Location: Apply environmental changes
+Location --> EnvMgr: Confirm changes applied
+WeatherMgr -> UIMgr: Update weather display
+UIMgr --> Player: Show new weather conditions
+
+' Player entering new area
+Player -> Game: Move to new location
+Game -> Location: Get current weather
+Location --> Game: Return weather data
+Game -> WeatherMgr: Adjust weather for new location
+WeatherMgr -> WeatherMgr: Calculate location-specific weather
+WeatherMgr -> Location: Apply adjusted weather
+Location --> WeatherMgr: Confirm weather applied
+WeatherMgr -> UIMgr: Update weather display
+UIMgr --> Player: Show new location's weather
+
+' Extreme weather event
+WeatherMgr -> WeatherMgr: Trigger extreme weather event
+WeatherMgr -> Location: Apply extreme weather effects
+Location --> WeatherMgr: Confirm extreme effects applied
+WeatherMgr -> EnvMgr: Trigger environmental hazards
+EnvMgr -> Location: Add environmental hazards
+Location --> EnvMgr: Confirm hazards added
+WeatherMgr -> UIMgr: Display weather warning
+UIMgr --> Player: Show extreme weather alert
+
+' Weather affecting gameplay
+Player -> Game: Attempt action
+Game -> WeatherMgr: Check weather effects
+WeatherMgr --> Game: Return weather modifiers
+Game -> PlayerChar: Apply weather effects to action
+PlayerChar --> Game: Return modified action result
+Game --> Player: Display action outcome
+
+' Weather affecting dragon flight
+Player -> Game: Attempt dragon flight
+Game -> WeatherMgr: Get current weather conditions
+WeatherMgr --> Game: Return flight-affecting conditions
+Game -> Dragon: Apply weather effects to flight
+Dragon -> Dragon: Adjust flight capabilities
+Dragon --> Game: Return flight parameters
+Game --> Player: Update flight controls/capabilities
+
+' Time-based weather transition
+TimeMgr -> WeatherMgr: Signal time progression
+WeatherMgr -> WeatherMgr: Progress weather pattern
+WeatherMgr -> Location: Update weather gradually
+Location --> WeatherMgr: Confirm gradual change
+WeatherMgr -> UIMgr: Update weather visuals
+UIMgr --> Player: Show transitioning weather
+
+WeatherMgr --> Game: Weather update complete
+deactivate WeatherMgr
+
+@enduml
