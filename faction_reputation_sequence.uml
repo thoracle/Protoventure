@@ -1,0 +1,73 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Faction Manager" as FactionMgr
+participant "Quest Manager" as QuestMgr
+participant "Player Character" as PlayerChar
+participant "NPC" as NPC
+participant "World" as World
+
+' Viewing faction standings
+Player -> Game: Request faction standings
+activate Game
+Game -> FactionMgr: Get faction standings
+FactionMgr -> PlayerChar: Retrieve reputation data
+PlayerChar --> FactionMgr: Return reputation data
+FactionMgr --> Game: Return faction standings
+Game --> Player: Display faction standings
+
+' Accepting a faction quest
+Player -> Game: Request faction quests
+Game -> FactionMgr: Get available quests
+FactionMgr -> QuestMgr: Retrieve quests for player's standing
+QuestMgr --> FactionMgr: Return available quests
+FactionMgr --> Game: Return faction quests
+Game --> Player: Display available quests
+Player -> Game: Accept quest
+Game -> QuestMgr: Assign quest to player
+QuestMgr --> Game: Quest assigned
+Game --> Player: Confirm quest acceptance
+
+' Completing a faction quest
+Player -> Game: Complete quest objective
+Game -> QuestMgr: Update quest progress
+QuestMgr -> QuestMgr: Check if quest complete
+alt Quest Complete
+    QuestMgr -> FactionMgr: Calculate reputation gain
+    FactionMgr -> PlayerChar: Update faction standing
+    PlayerChar --> FactionMgr: Standing updated
+    FactionMgr -> QuestMgr: Provide quest rewards
+    QuestMgr --> Game: Quest complete, rewards ready
+    Game --> Player: Display quest completion and rewards
+else Quest Not Complete
+    QuestMgr --> Game: Quest progress updated
+    Game --> Player: Display updated quest progress
+end
+
+' Interacting with NPCs based on reputation
+Player -> Game: Approach NPC
+Game -> FactionMgr: Check player's standing with NPC's faction
+FactionMgr --> Game: Return standing level
+Game -> NPC: Get interaction options based on standing
+NPC --> Game: Return interaction options
+Game --> Player: Display NPC interaction options
+
+' Experiencing world changes based on reputation
+Player -> Game: Enter new area
+Game -> World: Check for faction influence
+World -> FactionMgr: Get player's standings
+FactionMgr --> World: Return faction standings
+World -> World: Adjust area based on standings
+World --> Game: Return area description
+Game --> Player: Display area with faction influences
+
+' Gaining/Losing reputation through actions
+Player -> Game: Perform action affecting faction
+Game -> FactionMgr: Calculate reputation change
+FactionMgr -> PlayerChar: Update faction standing
+PlayerChar --> FactionMgr: Standing updated
+FactionMgr --> Game: Reputation change applied
+Game --> Player: Notify of reputation change
+
+deactivate Game
+@enduml
