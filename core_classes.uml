@@ -1,23 +1,38 @@
 @startuml
 class Game {
-  +current_location: Location
-  +player: Player
-  +factions: List[Faction]
   +start_game()
+  +create_character()
+  +bond_with_dragon()
+  +save_game()
   +process_command(command: str)
 }
 
 class Player {
   +name: str
+  +class: str
+  +stats: Dict[str, int]
   +dragon: Dragon
   +inventory: List[Item]
   +faction_standings: Dict[Faction, int]
+  +distribute_initial_stats()
+  +level_up()
 }
 
 class Dragon {
   +name: str
   +color: str
   +abilities: List[str]
+  +bond_with_player(player: Player)
+  +set_name(name: str)
+  +use_ability(ability: str)
+}
+
+class Character {
+  +name: str
+  +class: str
+  +stats: Dict[str, int]
+  +set_class(class: str)
+  +set_stats(stats: Dict[str, int])
 }
 
 class Location {
@@ -51,4 +66,5 @@ Game "1" -- "*" Faction
 Player "1" -- "1" Dragon
 Player "1" -- "*" Item
 Faction "1" -- "*" Mission
+Player --|> Character
 @enduml
