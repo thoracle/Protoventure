@@ -1,0 +1,91 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Story Manager" as StoryMgr
+participant "Quest Manager" as QuestMgr
+participant "Character Manager" as CharMgr
+participant "World State Manager" as WorldStateMgr
+participant "Dialogue System" as DialogSys
+participant "UI Manager" as UIMgr
+participant "Player Character" as PlayerChar
+
+' Story initialization
+Game -> StoryMgr: Initialize story
+activate StoryMgr
+StoryMgr -> WorldStateMgr: Get initial world state
+WorldStateMgr --> StoryMgr: Return world state
+StoryMgr -> StoryMgr: Set up story branches
+StoryMgr -> QuestMgr: Generate initial quests
+QuestMgr --> StoryMgr: Return quest data
+StoryMgr -> CharMgr: Initialize key characters
+CharMgr --> StoryMgr: Confirm character setup
+StoryMgr --> Game: Story initialization complete
+
+' Player makes a key decision
+Player -> Game: Make story decision
+Game -> StoryMgr: Process player choice
+StoryMgr -> StoryMgr: Update story state
+StoryMgr -> WorldStateMgr: Update world state
+WorldStateMgr --> StoryMgr: Confirm state update
+StoryMgr -> QuestMgr: Adjust available quests
+QuestMgr --> StoryMgr: Return updated quests
+StoryMgr -> CharMgr: Update character dispositions
+CharMgr --> StoryMgr: Confirm character updates
+StoryMgr -> UIMgr: Display choice consequences
+UIMgr --> Player: Show impact of decision
+
+' Dynamic quest generation
+StoryMgr -> QuestMgr: Generate new quest
+QuestMgr -> WorldStateMgr: Get current world state
+WorldStateMgr --> QuestMgr: Return world state
+QuestMgr -> QuestMgr: Create context-appropriate quest
+QuestMgr -> CharMgr: Assign NPCs to quest
+CharMgr --> QuestMgr: Confirm NPC assignments
+QuestMgr --> StoryMgr: Return new quest
+StoryMgr -> UIMgr: Notify of new quest
+UIMgr --> Player: Display new quest availability
+
+' Character interaction affecting story
+Player -> Game: Interact with NPC
+Game -> DialogSys: Initiate dialogue
+DialogSys -> CharMgr: Get NPC disposition
+CharMgr --> DialogSys: Return disposition
+DialogSys -> StoryMgr: Get relevant story elements
+StoryMgr --> DialogSys: Return story context
+DialogSys -> UIMgr: Display dialogue options
+UIMgr --> Player: Show conversation choices
+
+Player -> Game: Choose dialogue option
+Game -> DialogSys: Process dialogue choice
+DialogSys -> StoryMgr: Update story based on dialogue
+StoryMgr -> WorldStateMgr: Update world state
+WorldStateMgr --> StoryMgr: Confirm state update
+StoryMgr -> CharMgr: Update NPC relationships
+CharMgr --> StoryMgr: Confirm relationship changes
+DialogSys -> UIMgr: Display dialogue outcome
+UIMgr --> Player: Show conversation results
+
+' World event triggering story progression
+WorldStateMgr -> StoryMgr: Notify of significant world change
+StoryMgr -> StoryMgr: Evaluate story progression
+StoryMgr -> QuestMgr: Generate event-related quests
+QuestMgr --> StoryMgr: Return new quests
+StoryMgr -> CharMgr: Update character roles
+CharMgr --> StoryMgr: Confirm role updates
+StoryMgr -> UIMgr: Display story event
+UIMgr --> Player: Show world event and consequences
+
+' Player action indirectly affecting story
+Player -> Game: Perform action
+Game -> WorldStateMgr: Update world state
+WorldStateMgr -> StoryMgr: Check for story impact
+StoryMgr -> StoryMgr: Adjust story elements
+StoryMgr -> QuestMgr: Update relevant quests
+QuestMgr --> StoryMgr: Confirm quest updates
+StoryMgr -> CharMgr: Modify NPC behaviors
+CharMgr --> StoryMgr: Confirm behavior changes
+StoryMgr -> UIMgr: Subtly hint at changes
+UIMgr --> Player: Show subtle story shifts
+
+deactivate StoryMgr
+@enduml
