@@ -1,0 +1,97 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Crafting Manager" as CraftMgr
+participant "Inventory" as Inv
+participant "Recipe Book" as RecipeBook
+participant "Player Character" as PlayerChar
+participant "Random Number Generator" as RNG
+
+' Gathering resources
+Player -> Game: Gather resource
+activate Game
+Game -> PlayerChar: Check gathering skill
+PlayerChar --> Game: Return skill level
+Game -> Game: Calculate gathering success
+alt Gathering successful
+    Game -> Inv: Add resource to inventory
+    Inv --> Game: Confirm resource added
+    Game --> Player: Notify resource gathered
+else Gathering failed
+    Game --> Player: Notify gathering failed
+end
+
+' Viewing recipes
+Player -> Game: View available recipes
+Game -> RecipeBook: Get craftable recipes
+RecipeBook -> Inv: Check available resources
+Inv --> RecipeBook: Return resource availability
+RecipeBook --> Game: Return craftable recipes
+Game --> Player: Display craftable recipes
+
+' Crafting an item
+Player -> Game: Select recipe to craft
+Game -> CraftMgr: Initiate crafting process
+activate CraftMgr
+CraftMgr -> RecipeBook: Get recipe requirements
+RecipeBook --> CraftMgr: Return recipe details
+CraftMgr -> Inv: Check for required resources
+Inv --> CraftMgr: Confirm resource availability
+alt Resources available
+    CraftMgr -> Inv: Remove crafting resources
+    Inv --> CraftMgr: Confirm resources removed
+    CraftMgr -> CraftMgr: Calculate crafting success
+    alt Crafting successful
+        CraftMgr -> Inv: Add crafted item
+        Inv --> CraftMgr: Confirm item added
+        CraftMgr -> PlayerChar: Award crafting experience
+        CraftMgr --> Game: Crafting successful
+        Game --> Player: Notify item crafted
+    else Crafting failed
+        CraftMgr -> Inv: Return some resources
+        CraftMgr --> Game: Crafting failed
+        Game --> Player: Notify crafting failed
+    end
+else Resources not available
+    CraftMgr --> Game: Insufficient resources
+    Game --> Player: Notify insufficient resources
+end
+deactivate CraftMgr
+
+' Learning new recipe
+Player -> Game: Learn new recipe
+Game -> RecipeBook: Add new recipe
+RecipeBook --> Game: Confirm recipe added
+Game --> Player: Notify new recipe learned
+
+' Dismantling a crafted item
+Player -> Game: Select item to dismantle
+Game -> CraftMgr: Initiate dismantling process
+activate CraftMgr
+CraftMgr -> RecipeBook: Get item components
+RecipeBook --> CraftMgr: Return component list
+CraftMgr -> PlayerChar: Check dismantling skill
+PlayerChar --> CraftMgr: Return skill level
+CraftMgr -> RNG: Generate recovery chances
+RNG --> CraftMgr: Return recovery probabilities
+
+loop For each component
+    CraftMgr -> RNG: Check component recovery
+    RNG --> CraftMgr: Return recovery result
+    alt Component recovered
+        CraftMgr -> Inv: Add component to inventory
+        Inv --> CraftMgr: Confirm component added
+    else Component lost
+        CraftMgr -> CraftMgr: Log lost component
+    end
+end
+
+CraftMgr -> Inv: Remove dismantled item
+Inv --> CraftMgr: Confirm item removed
+CraftMgr -> PlayerChar: Award dismantling experience
+CraftMgr --> Game: Dismantling complete
+Game --> Player: Display dismantling results
+
+deactivate CraftMgr
+deactivate Game
+@enduml
