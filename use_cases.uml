@@ -2,11 +2,39 @@
 left to right direction
 actor Player
 
-rectangle "Player Creation and Dragon Bonding" {
+rectangle "Dragon Riding Adventure Game" {
   usecase "Create Character" as UC1
   usecase "Bond with Dragon" as UC2
+  usecase "Explore World" as UC3
+  usecase "Move to Location" as UC3_1
+  usecase "Explore Location" as UC3_2
+  usecase "Discover New Location" as UC3_3
+  usecase "Interact with Dragon" as UC4
+  usecase "Ride Dragon" as UC4_1
+  usecase "Train Dragon" as UC4_2
+  usecase "Use Dragon Ability" as UC4_3
+  usecase "Interact with Factions" as UC5
+  usecase "Join Faction" as UC5_1
+  usecase "Complete Faction Mission" as UC5_2
+  usecase "View Faction Standings" as UC5_3
 }
 
 Player --> UC1
 Player --> UC2
+Player --> UC3
+UC3 <|-- UC3_1
+UC3 <|-- UC3_2
+UC3 <|-- UC3_3
+Player --> UC4
+UC4 <|-- UC4_1
+UC4 <|-- UC4_2
+UC4 <|-- UC4_3
+Player --> UC5
+UC5 <|-- UC5_1
+UC5 <|-- UC5_2
+UC5 <|-- UC5_3
+
+UC4_1 ..> UC3 : <<extends>>
+UC4_3 ..> UC3_2 : <<extends>>
+UC5_2 ..> UC3 : <<extends>>
 @enduml
