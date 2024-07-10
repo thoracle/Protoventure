@@ -1,0 +1,74 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "NPC" as NPC
+participant "Dialog Manager" as DialogMgr
+participant "Quest Manager" as QuestMgr
+participant "Trade Manager" as TradeMgr
+
+Player -> Game: Approach NPC
+activate Game
+Game -> NPC: Initiate interaction
+NPC --> Game: Provide interaction options
+
+Game --> Player: Display interaction options
+
+alt Talk to NPC
+    Player -> Game: Choose to talk
+    Game -> DialogMgr: Start dialog
+    
+    loop While in conversation
+        DialogMgr -> NPC: Get dialog options
+        NPC --> DialogMgr: Provide dialog options
+        DialogMgr --> Game: Pass dialog options
+        Game --> Player: Display dialog options
+        Player -> Game: Choose dialog option
+        Game -> DialogMgr: Process chosen option
+        DialogMgr -> NPC: Apply dialog choice
+        NPC --> DialogMgr: Provide response
+        DialogMgr --> Game: Pass NPC response
+        Game --> Player: Display NPC response
+    end
+    
+    DialogMgr --> Game: End dialog
+    
+else Receive Quest
+    Player -> Game: Ask about quests
+    Game -> QuestMgr: Check available quests
+    QuestMgr -> NPC: Get quest information
+    NPC --> QuestMgr: Provide quest details
+    QuestMgr --> Game: Pass quest information
+    Game --> Player: Display available quests
+    Player -> Game: Accept quest
+    Game -> QuestMgr: Assign quest to player
+    QuestMgr --> Game: Confirm quest assignment
+    Game --> Player: Confirm quest accepted
+    
+else Trade with NPC
+    Player -> Game: Request trade
+    Game -> TradeMgr: Initialize trade
+    TradeMgr -> NPC: Get tradeable items
+    NPC --> TradeMgr: Provide item list
+    TradeMgr --> Game: Pass tradeable items
+    Game --> Player: Display trade interface
+    
+    loop While trading
+        Player -> Game: Select item to buy/sell
+        Game -> TradeMgr: Process trade
+        TradeMgr -> NPC: Update NPC inventory
+        TradeMgr --> Game: Confirm transaction
+        Game --> Player: Update player inventory and currency
+    end
+    
+    Player -> Game: End trade
+    Game -> TradeMgr: Finalize trade
+    TradeMgr --> Game: Confirm trade completion
+    Game --> Player: Close trade interface
+end
+
+Game -> NPC: End interaction
+NPC --> Game: Confirm interaction end
+Game --> Player: End NPC interaction
+
+deactivate Game
+@enduml
