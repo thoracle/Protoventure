@@ -1,0 +1,61 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Dragon Customization Manager" as DCM
+participant "Dragon" as Dragon
+participant "Inventory" as Inv
+participant "Shop" as Shop
+
+' Viewing dragon customization options
+Player -> Game: Request dragon customization
+activate Game
+Game -> DCM: Get customization options
+activate DCM
+DCM -> Dragon: Get current appearance
+Dragon --> DCM: Return current appearance
+DCM -> Inv: Get available customization items
+Inv --> DCM: Return available items
+DCM --> Game: Return customization options
+Game --> Player: Display customization options
+
+' Changing dragon appearance
+Player -> Game: Select appearance change
+Game -> DCM: Apply appearance change
+DCM -> Dragon: Update appearance
+Dragon --> DCM: Confirm appearance update
+DCM --> Game: Appearance changed
+Game --> Player: Display updated dragon appearance
+
+' Equipping dragon gear
+Player -> Game: Select gear to equip
+Game -> DCM: Equip gear on dragon
+DCM -> Inv: Check if gear is available
+Inv --> DCM: Confirm gear availability
+alt Gear is available
+    DCM -> Dragon: Equip gear
+    Dragon --> DCM: Confirm gear equipped
+    DCM -> Inv: Remove gear from inventory
+    Inv --> DCM: Confirm gear removed
+    DCM --> Game: Gear equipped successfully
+    Game --> Player: Display dragon with new gear
+else Gear not available
+    DCM --> Game: Gear not available
+    Game --> Player: Notify gear not available
+end
+
+' Purchasing new customization options
+Player -> Game: Browse customization shop
+Game -> Shop: Get available customizations
+Shop --> Game: Return available items
+Game --> Player: Display purchasable customizations
+
+Player -> Game: Purchase customization item
+Game -> Shop: Process purchase
+Shop -> Inv: Add item to inventory
+Inv --> Shop: Confirm item added
+Shop --> Game: Confirm purchase
+Game --> Player: Notify successful purchase
+
+deactivate DCM
+deactivate Game
+@enduml
