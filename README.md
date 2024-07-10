@@ -1,4 +1,4 @@
-> = Prompts
+> = Prompts for Claude 3.5 Sonnet
 
 >Let’s co-design a text adventure game in PlantUML and python 3.​​​​​​​​​​​​​​​​
 
