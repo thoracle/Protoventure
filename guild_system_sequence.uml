@@ -1,0 +1,85 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Guild Manager" as GuildMgr
+participant "Quest Manager" as QuestMgr
+participant "Player Character" as PlayerChar
+participant "Guild" as Guild
+participant "UI Manager" as UIMgr
+
+' Creating a new guild
+Player -> Game: Request to create guild
+activate Game
+Game -> GuildMgr: Initialize new guild
+activate GuildMgr
+GuildMgr -> Guild: Create guild
+Guild --> GuildMgr: Confirm guild creation
+GuildMgr -> PlayerChar: Set as guild leader
+PlayerChar --> GuildMgr: Confirm leadership status
+GuildMgr --> Game: Guild created
+Game -> UIMgr: Display guild creation confirmation
+UIMgr --> Player: Show new guild interface
+
+' Joining an existing guild
+Player -> Game: Request to join guild
+Game -> GuildMgr: Process join request
+GuildMgr -> Guild: Check join requirements
+Guild --> GuildMgr: Return requirements status
+alt Requirements Met
+    GuildMgr -> Guild: Add player to guild
+    Guild --> GuildMgr: Confirm player added
+    GuildMgr -> PlayerChar: Update guild affiliation
+    PlayerChar --> GuildMgr: Confirm affiliation update
+    GuildMgr --> Game: Player joined guild
+    Game -> UIMgr: Display join confirmation
+    UIMgr --> Player: Show guild welcome message
+else Requirements Not Met
+    GuildMgr --> Game: Join request denied
+    Game -> UIMgr: Display rejection reason
+    UIMgr --> Player: Show requirements not met message
+end
+
+' Initiating a guild quest
+Player -> Game: Request guild quests
+Game -> QuestMgr: Get available guild quests
+QuestMgr -> Guild: Check guild level and achievements
+Guild --> QuestMgr: Return guild status
+QuestMgr -> QuestMgr: Generate appropriate guild quests
+QuestMgr --> Game: Return guild quests
+Game -> UIMgr: Display available guild quests
+UIMgr --> Player: Show guild quest options
+
+Player -> Game: Select guild quest
+Game -> QuestMgr: Activate guild quest
+QuestMgr -> Guild: Assign quest to guild
+Guild --> QuestMgr: Confirm quest assignment
+QuestMgr --> Game: Quest activated
+Game -> UIMgr: Update guild quest log
+UIMgr --> Player: Show active guild quest details
+
+' Participating in guild activity
+Player -> Game: Contribute to guild quest
+Game -> QuestMgr: Process contribution
+QuestMgr -> Guild: Update quest progress
+Guild --> QuestMgr: Return updated progress
+QuestMgr -> PlayerChar: Award individual contribution points
+PlayerChar --> QuestMgr: Confirm points received
+QuestMgr --> Game: Contribution processed
+Game -> UIMgr: Update quest progress display
+UIMgr --> Player: Show updated quest status and personal contribution
+
+' Completing a guild quest
+Guild -> QuestMgr: Report quest completion
+QuestMgr -> QuestMgr: Verify completion requirements
+QuestMgr -> Guild: Award guild experience and rewards
+Guild --> QuestMgr: Confirm rewards received
+QuestMgr -> GuildMgr: Update guild level if applicable
+GuildMgr -> Guild: Level up guild
+Guild --> GuildMgr: Confirm level increase
+QuestMgr --> Game: Guild quest completed
+Game -> UIMgr: Display quest completion and rewards
+UIMgr --> Player: Show guild achievements and personal rewards
+
+deactivate GuildMgr
+deactivate Game
+@enduml
