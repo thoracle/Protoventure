@@ -1,0 +1,49 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant Inventory
+participant Item
+participant "Current Location" as Location
+
+Player -> Game: Attempt to collect item
+activate Game
+Game -> Location: Check for available items
+Location --> Game: Return available items
+Game --> Player: Display available items
+Player -> Game: Select item to collect
+Game -> Location: Remove item from location
+Location --> Game: Confirm item removed
+Game -> Inventory: Add item to inventory
+Inventory --> Game: Confirm item added
+Game --> Player: Confirm item collected
+
+Player -> Game: Request to use item
+Game -> Inventory: Get list of usable items
+Inventory --> Game: Return usable items
+Game --> Player: Display usable items
+Player -> Game: Select item to use
+Game -> Item: Use item
+Item --> Game: Return use effect
+Game -> Player: Apply item effect
+Game -> Inventory: Remove item if consumable
+Inventory --> Game: Confirm item removed (if applicable)
+Game --> Player: Inform of item use result
+
+Player -> Game: Request to drop item
+Game -> Inventory: Get list of droppable items
+Inventory --> Game: Return droppable items
+Game --> Player: Display droppable items
+Player -> Game: Select item to drop
+Game -> Inventory: Remove item from inventory
+Inventory --> Game: Confirm item removed
+Game -> Location: Add item to location
+Location --> Game: Confirm item added
+Game --> Player: Confirm item dropped
+
+Player -> Game: Request to view inventory
+Game -> Inventory: Get inventory contents
+Inventory --> Game: Return inventory contents
+Game --> Player: Display inventory contents
+
+deactivate Game
+@enduml
