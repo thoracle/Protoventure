@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>There Be Dragons</title>
+</head>
+<body>
+    <h1>Welcome to Dragon Riding Adventure</h1>
+    <div id="game-container">
+        <div id="output"></div>
+        <input type="text" id="input" placeholder="Enter your command">
+        <button onclick="sendCommand()">Send</button>
+    </div>
+
+    <script>
+        function sendCommand() {
+            const input = document.getElementById('input');
+            const command = input.value;
+            input.value = '';
+
+            fetch('/action', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({action: command}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const output = document.getElementById('output');
+                output.innerHTML += `<p>${data.message}</p>`;
+            });
+        }
+    </script>
+</body>
+</html>
