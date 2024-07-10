@@ -15,8 +15,28 @@ rectangle "Dragon Riding Adventure Game" {
   usecase "Use Dragon Ability" as UC4_3
   usecase "Interact with Factions" as UC5
   usecase "Join Faction" as UC5_1
-  usecase "Complete Faction Mission" as UC5_2
-  usecase "View Faction Standings" as UC5_3
+  usecase "View Faction Standings" as UC5_2
+  usecase "Manage Inventory" as UC6
+  usecase "Collect Item" as UC6_1
+  usecase "Use Item" as UC6_2
+  usecase "Drop Item" as UC6_3
+  usecase "View Inventory" as UC6_4
+  usecase "Engage in Combat" as UC7
+  usecase "Attack Enemy" as UC7_1
+  usecase "Use Ability in Combat" as UC7_2
+  usecase "Command Dragon in Combat" as UC7_3
+  usecase "Character Progression" as UC8
+  usecase "Gain Experience" as UC8_1
+  usecase "Level Up" as UC8_2
+  usecase "Improve Abilities" as UC8_3
+  usecase "Interact with NPCs" as UC9
+  usecase "Talk to NPC" as UC9_1
+  usecase "Trade with NPC" as UC9_2
+  usecase "Manage Missions" as UC10
+  usecase "View Available Missions" as UC10_1
+  usecase "Accept Mission" as UC10_2
+  usecase "Complete Mission" as UC10_3
+  usecase "Receive Mission Rewards" as UC10_4
 }
 
 Player --> UC1
@@ -32,9 +52,31 @@ UC4 <|-- UC4_3
 Player --> UC5
 UC5 <|-- UC5_1
 UC5 <|-- UC5_2
-UC5 <|-- UC5_3
+Player --> UC6
+UC6 <|-- UC6_1
+UC6 <|-- UC6_2
+UC6 <|-- UC6_3
+UC6 <|-- UC6_4
+Player --> UC7
+UC7 <|-- UC7_1
+UC7 <|-- UC7_2
+UC7 <|-- UC7_3
+Player --> UC8
+UC8 <|-- UC8_1
+UC8 <|-- UC8_2
+UC8 <|-- UC8_3
+Player --> UC9
+UC9 <|-- UC9_1
+UC9 <|-- UC9_2
+Player --> UC10
+UC10 <|-- UC10_1
+UC10 <|-- UC10_2
+UC10 <|-- UC10_3
+UC10 <|-- UC10_4
 
 UC4_1 ..> UC3 : <<extends>>
 UC4_3 ..> UC3_2 : <<extends>>
-UC5_2 ..> UC3 : <<extends>>
+UC7_3 ..> UC4_3 : <<includes>>
+UC10_2 ..> UC9_1 : <<includes>>
+UC10_3 ..> UC8_1 : <<includes>>
 @enduml
