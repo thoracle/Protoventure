@@ -1,0 +1,39 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Character" as Char
+participant "Dragon" as Dragon
+
+Player -> Game: Initiate dragon bonding
+activate Game
+
+Game -> Player: Present available dragons
+Player --> Game: Select dragon
+
+Game -> Dragon: Create new dragon
+activate Dragon
+
+Dragon --> Game: Dragon created
+Game --> Player: Display dragon information
+
+Game -> Player: Confirm dragon selection
+Player --> Game: Confirm selection
+
+Game -> Char: Assign dragon to character
+Char --> Game: Dragon assigned
+
+Game -> Dragon: Bond with character
+Dragon --> Game: Bonding complete
+
+Game -> Player: Prompt for dragon name
+Player --> Game: Enter dragon name
+
+Game -> Dragon: Set dragon name
+Dragon --> Game: Name set
+
+Game -> Game: Save dragon data
+Game --> Player: Display bonding completion message
+
+deactivate Dragon
+deactivate Game
+@enduml
