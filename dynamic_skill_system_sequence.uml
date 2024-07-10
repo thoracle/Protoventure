@@ -1,0 +1,89 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Skill Manager" as SkillMgr
+participant "Player Character" as PlayerChar
+participant "Experience Manager" as ExpMgr
+participant "Ability Manager" as AbilityMgr
+participant "UI Manager" as UIMgr
+participant "Quest Manager" as QuestMgr
+
+' Player performs skill-related action
+Player -> Game: Perform action
+activate Game
+Game -> SkillMgr: Process action for skill experience
+activate SkillMgr
+SkillMgr -> PlayerChar: Get current skill level
+PlayerChar --> SkillMgr: Return skill data
+SkillMgr -> SkillMgr: Calculate experience gain
+SkillMgr -> ExpMgr: Add skill experience
+ExpMgr -> PlayerChar: Update skill experience
+PlayerChar --> ExpMgr: Confirm update
+SkillMgr -> UIMgr: Display experience gain
+UIMgr --> Player: Show skill progress
+
+' Skill level up
+SkillMgr -> SkillMgr: Check for level up
+alt Skill Level Up
+    SkillMgr -> PlayerChar: Increase skill level
+    PlayerChar --> SkillMgr: Confirm level increase
+    SkillMgr -> AbilityMgr: Check for new abilities
+    AbilityMgr --> SkillMgr: Return new abilities (if any)
+    SkillMgr -> UIMgr: Display level up message
+    UIMgr --> Player: Show new skill level and abilities
+end
+
+' Learning new ability
+Player -> Game: Attempt to learn new ability
+Game -> AbilityMgr: Check ability requirements
+AbilityMgr -> PlayerChar: Get player stats and skills
+PlayerChar --> AbilityMgr: Return player data
+AbilityMgr -> AbilityMgr: Verify requirements
+alt Requirements Met
+    AbilityMgr -> PlayerChar: Add new ability
+    PlayerChar --> AbilityMgr: Confirm ability added
+    AbilityMgr -> UIMgr: Display new ability message
+    UIMgr --> Player: Show newly learned ability
+else Requirements Not Met
+    AbilityMgr -> UIMgr: Display requirements message
+    UIMgr --> Player: Show unmet requirements
+end
+
+' Skill-based quest completion
+QuestMgr -> SkillMgr: Check skill requirement for quest
+SkillMgr -> PlayerChar: Get relevant skill level
+PlayerChar --> SkillMgr: Return skill level
+SkillMgr --> QuestMgr: Confirm skill level
+QuestMgr -> QuestMgr: Mark objective as complete
+QuestMgr -> ExpMgr: Award quest experience
+ExpMgr -> PlayerChar: Update overall experience
+PlayerChar --> ExpMgr: Confirm update
+
+' Skill decay from inactivity
+Game -> SkillMgr: Trigger skill decay check
+SkillMgr -> PlayerChar: Get skill usage timestamps
+PlayerChar --> SkillMgr: Return usage data
+SkillMgr -> SkillMgr: Calculate skill decay
+alt Skill Decayed
+    SkillMgr -> PlayerChar: Reduce skill level/experience
+    PlayerChar --> SkillMgr: Confirm reduction
+    SkillMgr -> UIMgr: Notify of skill decay
+    UIMgr --> Player: Show skill decay message
+end
+
+' Synergy between skills
+Player -> Game: Perform multi-skill action
+Game -> SkillMgr: Process synergy effects
+SkillMgr -> PlayerChar: Get relevant skill levels
+PlayerChar --> SkillMgr: Return skill data
+SkillMgr -> SkillMgr: Calculate synergy bonus
+SkillMgr -> ExpMgr: Apply bonus experience
+ExpMgr -> PlayerChar: Update skills with bonus
+PlayerChar --> ExpMgr: Confirm update
+SkillMgr -> UIMgr: Display synergy effects
+UIMgr --> Player: Show enhanced results
+
+SkillMgr --> Game: Skill processing complete
+deactivate SkillMgr
+deactivate Game
+@enduml
