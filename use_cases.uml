@@ -13,9 +13,11 @@ rectangle "Dragon Riding Adventure Game" {
   usecase "Ride Dragon" as UC4_1
   usecase "Train Dragon" as UC4_2
   usecase "Use Dragon Ability" as UC4_3
+  usecase "Customize Dragon" as UC4_4
   usecase "Interact with Factions" as UC5
   usecase "Join Faction" as UC5_1
-  usecase "View Faction Standings" as UC5_2
+  usecase "Complete Faction Missions" as UC5_2
+  usecase "View Faction Standings" as UC5_3
   usecase "Manage Inventory" as UC6
   usecase "Collect Item" as UC6_1
   usecase "Use Item" as UC6_2
@@ -32,11 +34,26 @@ rectangle "Dragon Riding Adventure Game" {
   usecase "Interact with NPCs" as UC9
   usecase "Talk to NPC" as UC9_1
   usecase "Trade with NPC" as UC9_2
-  usecase "Manage Missions" as UC10
-  usecase "View Available Missions" as UC10_1
-  usecase "Accept Mission" as UC10_2
-  usecase "Complete Mission" as UC10_3
-  usecase "Receive Mission Rewards" as UC10_4
+  usecase "Receive Quests from NPC" as UC9_3
+  usecase "Craft Items" as UC10
+  usecase "Gather Resources" as UC10_1
+  usecase "Create Item" as UC10_2
+  usecase "Learn New Recipe" as UC10_3
+  usecase "Dismantle Item" as UC10_4
+  usecase "Manage Game State" as UC11
+  usecase "Save Game" as UC11_1
+  usecase "Load Game" as UC11_2
+  usecase "Quit Game" as UC11_3
+  usecase "View Stats and Progress" as UC11_4
+  usecase "Experience Weather System" as UC12
+  usecase "Observe Weather Changes" as UC12_1
+  usecase "Deal with Weather Effects" as UC12_2
+  usecase "Use Fast Travel" as UC13
+  usecase "Unlock Fast Travel Points" as UC13_1
+  usecase "Travel to Known Locations" as UC13_2
+  usecase "Manage Time" as UC14
+  usecase "Experience Day/Night Cycle" as UC14_1
+  usecase "Participate in Time-based Events" as UC14_2
 }
 
 Player --> UC1
@@ -49,9 +66,11 @@ Player --> UC4
 UC4 <|-- UC4_1
 UC4 <|-- UC4_2
 UC4 <|-- UC4_3
+UC4 <|-- UC4_4
 Player --> UC5
 UC5 <|-- UC5_1
 UC5 <|-- UC5_2
+UC5 <|-- UC5_3
 Player --> UC6
 UC6 <|-- UC6_1
 UC6 <|-- UC6_2
@@ -68,15 +87,32 @@ UC8 <|-- UC8_3
 Player --> UC9
 UC9 <|-- UC9_1
 UC9 <|-- UC9_2
+UC9 <|-- UC9_3
 Player --> UC10
 UC10 <|-- UC10_1
 UC10 <|-- UC10_2
 UC10 <|-- UC10_3
 UC10 <|-- UC10_4
+Player --> UC11
+UC11 <|-- UC11_1
+UC11 <|-- UC11_2
+UC11 <|-- UC11_3
+UC11 <|-- UC11_4
+Player --> UC12
+UC12 <|-- UC12_1
+UC12 <|-- UC12_2
+Player --> UC13
+UC13 <|-- UC13_1
+UC13 <|-- UC13_2
+Player --> UC14
+UC14 <|-- UC14_1
+UC14 <|-- UC14_2
 
 UC4_1 ..> UC3 : <<extends>>
 UC4_3 ..> UC3_2 : <<extends>>
 UC7_3 ..> UC4_3 : <<includes>>
-UC10_2 ..> UC9_1 : <<includes>>
-UC10_3 ..> UC8_1 : <<includes>>
+UC5_2 ..> UC9_3 : <<includes>>
+UC8_1 ..> UC5_2 : <<includes>>
+UC10_2 ..> UC10_1 : <<includes>>
+UC13_2 ..> UC13_1 : <<includes>>
 @enduml
