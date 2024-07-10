@@ -1,0 +1,38 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Character" as Char
+
+Player -> Game: Start new game
+activate Game
+
+Game -> Player: Request character name
+Player --> Game: Enter character name
+
+Game -> Char: Create new character
+activate Char
+
+Char --> Game: Character created
+Game --> Player: Display character creation confirmation
+
+Game -> Player: Request character class
+Player --> Game: Select character class
+
+Game -> Char: Set character class
+Char --> Game: Class set
+
+Game -> Player: Request initial stats distribution
+Player --> Game: Distribute initial stats
+
+Game -> Char: Set initial stats
+Char --> Game: Stats set
+
+Game --> Player: Display character summary
+Player -> Game: Confirm character creation
+
+Game -> Game: Save character data
+Game --> Player: Character creation complete
+
+deactivate Char
+deactivate Game
+@enduml
