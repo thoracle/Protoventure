@@ -1,44 +1,56 @@
 @startuml
 class Game {
+  +current_location: Location
+  +player: Player
+  +factions: List[Faction]
   +start_game()
   +create_character()
   +bond_with_dragon()
-  +save_game()
   +process_command(command: str)
+  +move_to_location(location: Location)
+  +explore_location()
+  +discover_new_location()
+  +train_dragon(focus: str)
+  +use_dragon_ability(ability: str)
 }
 
 class Player {
   +name: str
-  +class: str
+  +character_class: str
   +stats: Dict[str, int]
   +dragon: Dragon
   +inventory: List[Item]
   +faction_standings: Dict[Faction, int]
+  +current_location: Location
   +distribute_initial_stats()
   +level_up()
+  +ride_dragon()
+  +dismount_dragon()
 }
 
 class Dragon {
   +name: str
   +color: str
   +abilities: List[str]
+  +training_level: int
+  +is_rideable: bool
   +bond_with_player(player: Player)
   +set_name(name: str)
   +use_ability(ability: str)
-}
-
-class Character {
-  +name: str
-  +class: str
-  +stats: Dict[str, int]
-  +set_class(class: str)
-  +set_stats(stats: Dict[str, int])
+  +train(focus: str)
+  +mount_player()
+  +dismount_player()
 }
 
 class Location {
   +name: str
   +description: str
   +connected_locations: List[Location]
+  +undiscovered_locations: List[Location]
+  +get_connected_locations()
+  +get_details()
+  +discover_location() -> Location
+  +apply_ability_effect(ability: str)
 }
 
 class Faction {
@@ -63,8 +75,9 @@ class Item {
 
 Game "1" -- "1" Player
 Game "1" -- "*" Faction
+Game "1" -- "*" Location
 Player "1" -- "1" Dragon
 Player "1" -- "*" Item
 Faction "1" -- "*" Mission
-Player --|> Character
+Player "1" -- "1" Location
 @enduml
