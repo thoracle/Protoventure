@@ -1,0 +1,53 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Time Manager" as TimeMgr
+participant "Weather Manager" as WeatherMgr
+participant "World State" as WorldState
+participant "Location" as Location
+participant "Player Character" as PlayerChar
+
+' Time progression
+Game -> TimeMgr: Update game time
+activate TimeMgr
+TimeMgr -> TimeMgr: Increment time
+TimeMgr -> WorldState: Update world time
+WorldState --> TimeMgr: Confirm time update
+TimeMgr --> Game: Time updated
+deactivate TimeMgr
+
+' Weather change check
+Game -> WeatherMgr: Check for weather change
+activate WeatherMgr
+WeatherMgr -> WeatherMgr: Calculate weather change
+alt Weather changes
+    WeatherMgr -> WorldState: Update weather condition
+    WorldState --> WeatherMgr: Confirm weather update
+    WeatherMgr -> Location: Apply weather effects
+    Location --> WeatherMgr: Confirm effects applied
+else No change
+    WeatherMgr --> Game: No weather change
+end
+WeatherMgr --> Game: Weather status
+deactivate WeatherMgr
+
+' Time-based events
+Game -> WorldState: Check for time-based events
+WorldState --> Game: Return active events
+
+loop For each active event
+    Game -> Location: Apply event effects
+    Location --> Game: Confirm effects applied
+end
+
+' Update player status based on time/weather
+Game -> PlayerChar: Update status based on time/weather
+PlayerChar -> PlayerChar: Apply time/weather effects
+PlayerChar --> Game: Status updated
+
+' Notify player of significant changes
+alt Significant change occurred
+    Game --> Player: Notify of time/weather change
+end
+
+@enduml
