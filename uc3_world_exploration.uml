@@ -1,0 +1,42 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Current Location" as CurrLoc
+participant "New Location" as NewLoc
+participant "Dragon" as Dragon
+
+Player -> Game: Request to move to a location
+activate Game
+
+Game -> CurrLoc: Get connected locations
+CurrLoc --> Game: Return list of connected locations
+Game --> Player: Display available locations
+
+Player -> Game: Select destination
+Game -> NewLoc: Move to selected location
+activate NewLoc
+NewLoc --> Game: Confirm arrival
+Game --> Player: Display new location description
+
+Player -> Game: Request to explore location
+Game -> NewLoc: Get location details
+NewLoc --> Game: Return detailed information
+Game --> Player: Display exploration results
+
+alt Discover new location
+    Game -> NewLoc: Check for undiscovered connections
+    NewLoc --> Game: Return new location
+    Game -> Game: Add new location to world map
+    Game --> Player: Notify of new location discovery
+else No new location
+    Game --> Player: Inform no new discoveries
+end
+
+Player -> Game: Request to use dragon for exploration
+Game -> Dragon: Use exploration ability
+Dragon --> Game: Return enhanced exploration results
+Game --> Player: Display enhanced exploration results
+
+deactivate NewLoc
+deactivate Game
+@enduml
