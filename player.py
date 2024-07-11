@@ -1,3 +1,4 @@
+import random
 from dragon import Dragon
 
 class Player:
@@ -13,9 +14,22 @@ class Player:
         self.intelligence = 10
         self.inventory = []
         self.dragon = None
+        self.attack = 10
+        self.defense = 5
 
     def bond_with_dragon(self, dragon):
         self.dragon = dragon
+
+    def take_damage(self, damage):
+        actual_damage = max(damage - self.defense, 0)
+        self.health -= actual_damage
+        return actual_damage
+
+    def is_defeated(self):
+        return self.health <= 0
+
+    def attack_enemy(self):
+        return random.randint(1, self.attack)
 
     def to_dict(self):
         return {
@@ -29,7 +43,9 @@ class Player:
             "dexterity": self.dexterity,
             "intelligence": self.intelligence,
             "inventory": self.inventory,
-            "dragon": self.dragon.to_dict() if self.dragon else None
+            "dragon": self.dragon.to_dict() if self.dragon else None,
+            "attack": self.attack,
+            "defense": self.defense
         }
 
     @classmethod
@@ -43,6 +59,8 @@ class Player:
         player.dexterity = data['dexterity']
         player.intelligence = data['intelligence']
         player.inventory = data['inventory']
+        player.attack = data['attack']
+        player.defense = data['defense']
         if data['dragon']:
             player.dragon = Dragon.from_dict(data['dragon'])
         return player
