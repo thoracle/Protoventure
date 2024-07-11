@@ -39,8 +39,8 @@
             <div id="available-moves"></div>
             <button onclick="look()">Look Around</button>
             <button onclick="getStatus()">Check Status</button>
-            <button onclick="mountDragon()">Mount Dragon</button>
-            <button onclick="dismountDragon()">Dismount Dragon</button>
+            <button id="mount-button" onclick="mountDragon()">Mount Dragon</button>
+            <button id="dismount-button" onclick="dismountDragon()" style="display: none;">Dismount Dragon</button>
             <div id="move-buttons"></div>
             <div id="fly-buttons"></div>
         </div>
@@ -107,29 +107,47 @@
             const locationInfo = document.getElementById('location-info');
             const moveButtons = document.getElementById('move-buttons');
             const flyButtons = document.getElementById('fly-buttons');
+            const mountButton = document.getElementById('mount-button');
+            const dismountButton = document.getElementById('dismount-button');
 
             output.innerHTML += `<p>${data.message}</p>`;
             locationInfo.innerHTML = `<p>${data.game_state.current_location}</p>`;
             
-            // Clear previous move buttons
+            // Clear previous move and fly buttons
             moveButtons.innerHTML = '';
             flyButtons.innerHTML = '';
             
-            // Create a button for each available move
-            data.game_state.available_moves.forEach(move => {
-                const button = document.createElement('button');
-                button.textContent = `Move to ${move}`;
-                button.onclick = function() { moveToLocation(move); };
-                moveButtons.appendChild(button);
-            });
+            const isDragonMounted = data.game_state.player.dragon && data.game_state.player.dragon.is_ridden;
 
-            // Create a button for each possible flying destination
-            data.game_state.all_locations.forEach(location => {
-                const button = document.createElement('button');
-                button.textContent = `Fly to ${location}`;
-                button.onclick = function() { flyToLocation(location); };
-                flyButtons.appendChild(button);
-            });
+            if (isDragonMounted) {
+                // Show fly buttons and hide move buttons
+                moveButtons.style.display = 'none';
+                flyButtons.style.display = 'block';
+                mountButton.style.display = 'none';
+                dismountButton.style.display = 'inline-block';
+
+                // Create a button for each possible flying destination
+                data.game_state.all_locations.forEach(location => {
+                    const button = document.createElement('button');
+                    button.textContent = `Fly to ${location}`;
+                    button.onclick = function() { flyToLocation(location); };
+                    flyButtons.appendChild(button);
+                });
+            } else {
+                // Show move buttons and hide fly buttons
+                moveButtons.style.display = 'block';
+                flyButtons.style.display = 'none';
+                mountButton.style.display = 'inline-block';
+                dismountButton.style.display = 'none';
+
+                // Create a button for each available move
+                data.game_state.available_moves.forEach(move => {
+                    const button = document.createElement('button');
+                    button.textContent = `Move to ${move}`;
+                    button.onclick = function() { moveToLocation(move); };
+                    moveButtons.appendChild(button);
+                });
+            }
         }
 
         function look() {
