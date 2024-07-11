@@ -5,6 +5,8 @@ class Game {
   -player: Player
   -world: World
   -config: Dict
+  -in_combat: bool
+  -current_enemy: Enemy
   +__init__()
   +load_config()
   +start_new_game(player_name: str, character_class: str)
@@ -12,9 +14,14 @@ class Game {
   +save_game()
   +bond_with_dragon(dragon_name: str, dragon_color: str, dragon_breed: str): str
   +initiate_combat(enemy: Enemy): str
+  +player_turn(action: str): str
+  +enemy_turn(enemy: Enemy): List[str]
+  +use_item_in_combat(): str
   +mount_dragon(): str
   +dismount_dragon(): str
   +fly_to_location(location: str): str
+  +view_inventory(): str
+  +use_item(item_name: str): str
   +process_action(action: str): str
   +get_game_state(): Dict
 }
@@ -25,19 +32,29 @@ class Player {
   +level: int
   +experience: int
   +health: int
+  +max_health: int
   +mana: int
+  +max_mana: int
   +strength: int
   +dexterity: int
   +intelligence: int
   +inventory: List[Item]
+  +max_inventory_size: int
   +dragon: Dragon
   +attack: int
   +defense: int
+  +speed: int
   +__init__(name: str, character_class: str)
-  +bond_with_dragon(dragon: Dragon)
   +take_damage(damage: int): int
   +is_defeated(): bool
-  +attack_enemy(): int
+  +attack_enemy(): Tuple[str, int]
+  +special_ability(): Tuple[str, int]
+  +gain_experience(amount: int)
+  +level_up()
+  +bond_with_dragon(dragon: Dragon)
+  +add_item(item: Item): bool
+  +remove_item(item_name: str): Item
+  +use_item(item_name: str): str
   +to_dict(): Dict
   +from_dict(data: Dict): Player
 }
@@ -77,21 +94,27 @@ class World {
 class Enemy {
   +name: str
   +health: int
+  +max_health: int
   +attack: int
   +defense: int
-  +__init__(name: str, health: int, attack: int, defense: int)
+  +speed: int
+  +__init__(name: str, health: int, attack: int, defense: int, speed: int)
   +take_damage(damage: int): int
   +is_defeated(): bool
-  +attack_player(): int
+  +attack_player(): Tuple[str, int]
   +to_dict(): Dict
+  +from_dict(data: Dict): Enemy
 }
 
 class Item {
   +name: str
   +description: str
-  +value: int
-  +__init__(name: str, description: str, value: int)
-  +use(player: Player)
+  +item_type: str
+  +effect_value: int
+  +__init__(name: str, description: str, item_type: str, effect_value: int)
+  +use(player: Player): str
+  +to_dict(): Dict
+  +from_dict(data: Dict): Item
 }
 
 Game "1" -- "1" Player
