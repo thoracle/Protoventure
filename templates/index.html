@@ -46,6 +46,13 @@
             <div id="fly-buttons"></div>
             <div id="inventory"></div>
         </div>
+        <div id="combat" style="display: none;">
+            <h2>Combat</h2>
+            <div id="combat-log"></div>
+            <button onclick="playerAttack()">Attack</button>
+            <button onclick="playerSpecialAbility()">Special Ability</button>
+            <button onclick="playerUseItem()">Use Item</button>
+        </div>
     </div>
 
     <script>
@@ -131,6 +138,8 @@
             const mountButton = document.getElementById('mount-button');
             const dismountButton = document.getElementById('dismount-button');
             const inventoryDiv = document.getElementById('inventory');
+            const combatDiv = document.getElementById('combat');
+            const combatLog = document.getElementById('combat-log');
 
             output.innerHTML += `<p>${data.message}</p>`;
             locationInfo.innerHTML = `<p>${data.game_state.current_location}</p>`;
@@ -177,6 +186,14 @@
                     inventoryDiv.appendChild(itemButton);
                 });
             }
+
+            // Show combat interface if in combat
+            if (data.game_state.in_combat) {
+                combatDiv.style.display = 'block';
+                combatLog.innerHTML = data.combat_log || '';
+            } else {
+                combatDiv.style.display = 'none';
+            }
         }
 
         function look() {
@@ -209,6 +226,18 @@
 
         function useItem(itemName) {
             sendAction(`use_item:${itemName}`);
+        }
+
+        function playerAttack() {
+            sendAction('attack');
+        }
+
+        function playerSpecialAbility() {
+            sendAction('special_ability');
+        }
+
+        function playerUseItem() {
+            sendAction('use_item');
         }
 
         function sendAction(action) {
