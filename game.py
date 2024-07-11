@@ -138,7 +138,7 @@ class Game:
             return f"Unknown action: {action}"
 
     def get_game_state(self):
-    return {
+        return {
         "player": {
             "name": self.player.name,
             "health": self.player.health,
@@ -154,4 +154,4 @@ class Game:
         "current_location": self.world.get_current_location_info(),
         "available_moves": self.world.get_available_moves(),
         "all_locations": self.world.get_all_locations()
-    }
+        }
