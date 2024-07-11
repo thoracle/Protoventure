@@ -1,0 +1,53 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Player Character" as PlayerChar
+participant "Enemy" as Enemy
+participant "Combat Manager" as CombatMgr
+
+Player -> Game: Move to location with enemy
+Game -> CombatMgr: Initiate combat
+activate CombatMgr
+
+loop Until combat ends
+    CombatMgr -> Game: Get combat options
+    Game --> Player: Display combat options
+    
+    Player -> Game: Choose action
+    Game -> CombatMgr: Process player action
+    
+    alt Player attacks
+        CombatMgr -> PlayerChar: Attack enemy
+        PlayerChar -> Enemy: Apply damage
+        Enemy --> CombatMgr: Report health status
+    else Player uses special ability
+        CombatMgr -> PlayerChar: Use special ability
+        PlayerChar -> Enemy: Apply ability effect
+        Enemy --> CombatMgr: Report effect result
+    else Player uses item
+        CombatMgr -> PlayerChar: Use item
+        PlayerChar -> PlayerChar: Apply item effect
+        PlayerChar --> CombatMgr: Report item use result
+    end
+    
+    alt Enemy not defeated
+        CombatMgr -> Enemy: Enemy turn
+        Enemy -> PlayerChar: Attack player
+        PlayerChar --> CombatMgr: Report health status
+    end
+    
+    CombatMgr -> CombatMgr: Check combat end conditions
+end
+
+alt Player wins
+    CombatMgr -> PlayerChar: Award experience
+    CombatMgr -> Game: End combat (victory)
+else Player loses
+    CombatMgr -> Game: End combat (defeat)
+end
+
+CombatMgr --> Game: Return combat result
+deactivate CombatMgr
+Game --> Player: Display combat outcome
+
+@enduml
