@@ -4,6 +4,7 @@ from player import Player
 from world import World
 from dragon import Dragon
 from enemy import Enemy
+from item import Item
 import random
 
 class Game:
@@ -19,6 +20,12 @@ class Game:
     def start_new_game(self, player_name, character_class):
         self.player = Player(player_name, character_class)
         self.world = World()
+        
+        # Add some initial items to the player's inventory
+        self.player.add_item(Item("Health Potion", "Restores 20 health", "healing", 20))
+        self.player.add_item(Item("Sword", "A basic sword", "weapon", 5))
+        self.player.add_item(Item("Leather Armor", "Basic armor", "armor", 3))
+        
         self.save_game()
 
     def load_game(self):
@@ -103,6 +110,17 @@ class Game:
         else:
             return "You need to be riding a dragon to fly."
 
+    def view_inventory(self):
+        if not self.player.inventory:
+            return "Your inventory is empty."
+        inventory_list = [f"{item.name}: {item.description}" for item in self.player.inventory]
+        return "Inventory:\n" + "\n".join(inventory_list)
+
+    def use_item(self, item_name):
+        result = self.player.use_item(item_name)
+        self.save_game()
+        return result
+
     def process_action(self, action):
         if action == "look":
             return self.world.get_current_location_info()
@@ -134,24 +152,19 @@ class Game:
         elif action.startswith("bond_with_dragon"):
             _, name, color, breed = action.split(":")
             return self.bond_with_dragon(name, color, breed)
+        elif action == "view_inventory":
+            return self.view_inventory()
+        elif action.startswith("use_item:"):
+            _, item_name = action.split(":")
+            return self.use_item(item_name)
         else:
             return f"Unknown action: {action}"
 
     def get_game_state(self):
         return {
-        "player": {
-            "name": self.player.name,
-            "health": self.player.health,
-            "attack": self.player.attack,
-            "defense": self.player.defense,
-            "dragon": {
-                "name": self.player.dragon.name if self.player.dragon else None,
-                "is_ridden": self.player.dragon.is_ridden if self.player.dragon else False,
-                "energy": self.player.dragon.energy if self.player.dragon else 0
-            } if self.player.dragon else None
-        },
-        "world": self.world.to_dict(),
-        "current_location": self.world.get_current_location_info(),
-        "available_moves": self.world.get_available_moves(),
-        "all_locations": self.world.get_all_locations()
+            "player": self.player.to_dict(),
+            "world": self.world.to_dict(),
+            "current_location": self.world.get_current_location_info(),
+            "available_moves": self.world.get_available_moves(),
+            "all_locations": self.world.get_all_locations()
         }
