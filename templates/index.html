@@ -39,7 +39,10 @@
             <div id="available-moves"></div>
             <button onclick="look()">Look Around</button>
             <button onclick="getStatus()">Check Status</button>
+            <button onclick="mountDragon()">Mount Dragon</button>
+            <button onclick="dismountDragon()">Dismount Dragon</button>
             <div id="move-buttons"></div>
+            <div id="fly-buttons"></div>
         </div>
     </div>
 
@@ -103,12 +106,14 @@
             const output = document.getElementById('output');
             const locationInfo = document.getElementById('location-info');
             const moveButtons = document.getElementById('move-buttons');
+            const flyButtons = document.getElementById('fly-buttons');
 
             output.innerHTML += `<p>${data.message}</p>`;
             locationInfo.innerHTML = `<p>${data.game_state.current_location}</p>`;
             
             // Clear previous move buttons
             moveButtons.innerHTML = '';
+            flyButtons.innerHTML = '';
             
             // Create a button for each available move
             data.game_state.available_moves.forEach(move => {
@@ -116,6 +121,14 @@
                 button.textContent = `Move to ${move}`;
                 button.onclick = function() { moveToLocation(move); };
                 moveButtons.appendChild(button);
+            });
+
+            // Create a button for each possible flying destination
+            data.game_state.all_locations.forEach(location => {
+                const button = document.createElement('button');
+                button.textContent = `Fly to ${location}`;
+                button.onclick = function() { flyToLocation(location); };
+                flyButtons.appendChild(button);
             });
         }
 
@@ -127,8 +140,20 @@
             sendAction('status');
         }
 
+        function mountDragon() {
+            sendAction('mount_dragon');
+        }
+
+        function dismountDragon() {
+            sendAction('dismount_dragon');
+        }
+
         function moveToLocation(location) {
             sendAction(`move_to:${location}`);
+        }
+
+        function flyToLocation(location) {
+            sendAction(`fly_to:${location}`);
         }
 
         function sendAction(action) {
