@@ -7,69 +7,47 @@ rectangle "Dragon Riding Adventure Game" {
   usecase "Choose Name" as UC1_1
   usecase "Select Class" as UC1_2
   usecase "Bond with Dragon" as UC2
+  usecase "Name Dragon" as UC2_1
+  usecase "Choose Dragon Color" as UC2_2
+  usecase "Select Dragon Breed" as UC2_3
   usecase "Explore World" as UC3
-  usecase "Move to Location" as UC3_1
-  usecase "Examine Surroundings" as UC3_2
-  usecase "Interact with Objects" as UC3_3
-  usecase "Ride Dragon" as UC4
-  usecase "Mount Dragon" as UC4_1
-  usecase "Control Flight" as UC4_2
-  usecase "Dismount Dragon" as UC4_3
-  usecase "Engage in Combat" as UC5
-  usecase "Attack Enemy" as UC5_1
-  usecase "Defend" as UC5_2
-  usecase "Use Ability" as UC5_3
-  usecase "Manage Inventory" as UC6
-  usecase "View Items" as UC6_1
-  usecase "Use Item" as UC6_2
-  usecase "Drop Item" as UC6_3
-  usecase "Craft Items" as UC7
-  usecase "View Recipes" as UC7_1
-  usecase "Gather Resources" as UC7_2
-  usecase "Create Item" as UC7_3
-  usecase "Interact with NPCs" as UC8
-  usecase "Talk to NPC" as UC8_1
-  usecase "Trade with NPC" as UC8_2
-  usecase "Accept Quest" as UC8_3
-  usecase "Save/Load Game" as UC9
-  usecase "Save Progress" as UC9_1
-  usecase "Load Game" as UC9_2
+  usecase "Look Around" as UC3_1
+  usecase "Move to Location" as UC3_2
+  usecase "Engage in Combat" as UC4
+  usecase "Attack Enemy" as UC4_1
+  usecase "Take Damage" as UC4_2
+  usecase "Defeat Enemy" as UC4_3
+  usecase "Check Status" as UC5
+  usecase "Save Game" as UC6
+  usecase "Load Game" as UC7
+  usecase "Ride Dragon" as UC8
+  usecase "Mount Dragon" as UC8_1
+  usecase "Fly to Location" as UC8_2
+  usecase "Dismount Dragon" as UC8_3
 }
 
 Player --> UC1
 UC1 <|-- UC1_1
 UC1 <|-- UC1_2
 Player --> UC2
+UC2 <|-- UC2_1
+UC2 <|-- UC2_2
+UC2 <|-- UC2_3
 Player --> UC3
 UC3 <|-- UC3_1
 UC3 <|-- UC3_2
-UC3 <|-- UC3_3
 Player --> UC4
 UC4 <|-- UC4_1
 UC4 <|-- UC4_2
 UC4 <|-- UC4_3
 Player --> UC5
-UC5 <|-- UC5_1
-UC5 <|-- UC5_2
-UC5 <|-- UC5_3
 Player --> UC6
-UC6 <|-- UC6_1
-UC6 <|-- UC6_2
-UC6 <|-- UC6_3
 Player --> UC7
-UC7 <|-- UC7_1
-UC7 <|-- UC7_2
-UC7 <|-- UC7_3
 Player --> UC8
 UC8 <|-- UC8_1
 UC8 <|-- UC8_2
 UC8 <|-- UC8_3
-Player --> UC9
-UC9 <|-- UC9_1
-UC9 <|-- UC9_2
 
-UC4 ..> UC3 : <<extends>>
-UC7 ..> UC6 : <<includes>>
-UC8_3 ..> UC3 : <<extends>>
-
+UC3_2 ..> UC4 : <<includes>>
+UC8_2 ..> UC3 : <<extends>>
 @enduml
