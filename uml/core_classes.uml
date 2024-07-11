@@ -11,7 +11,11 @@ class Game {
   +load_game()
   +save_game()
   +bond_with_dragon(dragon_name: str, dragon_color: str, dragon_breed: str): str
-  +process_action(action: str): Dict
+  +initiate_combat(enemy: Enemy): str
+  +mount_dragon(): str
+  +dismount_dragon(): str
+  +fly_to_location(location: str): str
+  +process_action(action: str): str
   +get_game_state(): Dict
 }
 
@@ -27,8 +31,13 @@ class Player {
   +intelligence: int
   +inventory: List[Item]
   +dragon: Dragon
+  +attack: int
+  +defense: int
   +__init__(name: str, character_class: str)
   +bond_with_dragon(dragon: Dragon)
+  +take_damage(damage: int): int
+  +is_defeated(): bool
+  +attack_enemy(): int
   +to_dict(): Dict
   +from_dict(data: Dict): Player
 }
@@ -42,24 +51,39 @@ class Dragon {
   +energy: int
   +bond_level: int
   +abilities: List[str]
+  +is_ridden: bool
   +__init__(name: str, color: str, breed: str)
+  +mount(): bool
+  +dismount()
+  +fly_to(location: str): bool
   +to_dict(): Dict
   +from_dict(data: Dict): Dragon
 }
 
 class World {
-  -locations: Dict[str, Location]
+  -locations: Dict[str, Dict]
   -current_location: str
   +__init__()
+  +move_to(location: str): bool
+  +get_current_location_info(): str
+  +get_available_moves(): List[str]
+  +get_current_enemies(): List[Enemy]
+  +remove_enemy(enemy: Enemy)
+  +get_all_locations(): List[str]
   +to_dict(): Dict
   +from_dict(data: Dict): World
 }
 
-class Location {
+class Enemy {
   +name: str
-  +description: str
-  +connected_locations: List[str]
-  +__init__(name: str, description: str)
+  +health: int
+  +attack: int
+  +defense: int
+  +__init__(name: str, health: int, attack: int, defense: int)
+  +take_damage(damage: int): int
+  +is_defeated(): bool
+  +attack_player(): int
+  +to_dict(): Dict
 }
 
 class Item {
@@ -72,8 +96,7 @@ class Item {
 
 Game "1" -- "1" Player
 Game "1" -- "1" World
-World "1" -- "*" Location
-Player "1" -- "*" Item
+World "1" -- "*" Enemy
 Player "1" -- "1" Dragon
-
+Player "1" -- "*" Item
 @enduml
