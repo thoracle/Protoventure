@@ -13,13 +13,13 @@ class World:
                 "name": "Forest Entrance",
                 "description": "The edge of a dense forest. The path continues north, and you can return south to the starting area.",
                 "connected_locations": ["starting_area", "deep_forest"],
-                "enemies": [Enemy("Wolf", 20, 5, 2, 8)]  # Added speed parameter
+                "enemies": [Enemy("Wolf", 20, 5, 2, 8)]
             },
             "deep_forest": {
                 "name": "Deep Forest",
                 "description": "A dark and mysterious part of the forest. Paths lead south to the forest entrance and east to a hidden grove.",
                 "connected_locations": ["forest_entrance", "hidden_grove"],
-                "enemies": [Enemy("Bear", 40, 8, 4, 6)]  # Added speed parameter
+                "enemies": [Enemy("Bear", 40, 8, 4, 6)]
             },
             "hidden_grove": {
                 "name": "Hidden Grove",
@@ -31,7 +31,7 @@ class World:
                 "name": "Mountain Pass",
                 "description": "A narrow pass through towering mountains. The pass continues north, and you can return south to the hidden grove.",
                 "connected_locations": ["hidden_grove", "mountain_peak"],
-                "enemies": [Enemy("Mountain Lion", 30, 7, 3, 10)]  # Added speed parameter
+                "enemies": [Enemy("Mountain Lion", 30, 7, 3, 10)]
             },
             "mountain_peak": {
                 "name": "Mountain Peak",
@@ -89,14 +89,28 @@ class World:
         return list(self.locations.keys())
 
     def to_dict(self):
+        serializable_locations = {}
+        for loc_name, loc_data in self.locations.items():
+            serializable_locations[loc_name] = {
+                "name": loc_data["name"],
+                "description": loc_data["description"],
+                "connected_locations": loc_data["connected_locations"],
+                "enemies": [enemy.to_dict() for enemy in loc_data["enemies"]]
+            }
         return {
-            "locations": self.locations,
+            "locations": serializable_locations,
             "current_location": self.current_location
         }
 
     @classmethod
     def from_dict(cls, data):
         world = cls()
-        world.locations = data['locations']
         world.current_location = data['current_location']
+        for loc_name, loc_data in data['locations'].items():
+            world.locations[loc_name] = {
+                "name": loc_data["name"],
+                "description": loc_data["description"],
+                "connected_locations": loc_data["connected_locations"],
+                "enemies": [Enemy.from_dict(enemy_data) for enemy_data in loc_data["enemies"]]
+            }
         return world
