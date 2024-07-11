@@ -17,3 +17,11 @@ class Enemy:
 
     def attack_player(self):
         return random.randint(1, self.attack)
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "health": self.health,
+            "attack": self.attack,
+            "defense": self.defense
+        }
