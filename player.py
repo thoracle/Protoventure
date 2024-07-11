@@ -1,3 +1,5 @@
+from dragon import Dragon
+
 class Player:
     def __init__(self, name, character_class):
         self.name = name
@@ -10,6 +12,10 @@ class Player:
         self.dexterity = 10
         self.intelligence = 10
         self.inventory = []
+        self.dragon = None
+
+    def bond_with_dragon(self, dragon):
+        self.dragon = dragon
 
     def to_dict(self):
         return {
@@ -22,7 +28,8 @@ class Player:
             "strength": self.strength,
             "dexterity": self.dexterity,
             "intelligence": self.intelligence,
-            "inventory": self.inventory
+            "inventory": self.inventory,
+            "dragon": self.dragon.to_dict() if self.dragon else None
         }
 
     @classmethod
@@ -36,4 +43,6 @@ class Player:
         player.dexterity = data['dexterity']
         player.intelligence = data['intelligence']
         player.inventory = data['inventory']
+        if data['dragon']:
+            player.dragon = Dragon.from_dict(data['dragon'])
         return player
