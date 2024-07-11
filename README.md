@@ -27,8 +27,8 @@ Here's a brief explanation of each class:
 > Let’s enumerate the core use cases for the game​​​​​​​​​​​​​​​​ formatted as “actor takes an action on target object” when possible​​​​​​​​​​​​​​​​.
  Here's the revised list of use cases formatted as "actor takes an action on target object" where applicable, with asterisks (*) marking the ones included in our use case UML diagram:
 
-1. * Player creates character
-2. * Player bonds with dragon
+1. - Player creates character
+2. - Player bonds with dragon
 3. * Player explores world
 4. * Player rides dragon
 5. * Player engages in combat with enemies
