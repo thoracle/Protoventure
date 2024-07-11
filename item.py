@@ -2,12 +2,12 @@ class Item:
     def __init__(self, name, description, item_type, effect_value):
         self.name = name
         self.description = description
-        self.item_type = item_type  # e.g., "healing", "weapon", "armor"
+        self.item_type = item_type
         self.effect_value = effect_value
 
     def use(self, player):
         if self.item_type == "healing":
-            player.health += self.effect_value
+            player.health = min(player.health + self.effect_value, player.max_health)
             return f"You used {self.name} and restored {self.effect_value} health."
         elif self.item_type == "weapon":
             player.attack += self.effect_value
