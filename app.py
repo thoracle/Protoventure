@@ -15,8 +15,11 @@ def start_game():
     if data.get('load_game'):
         game.load_game()
     else:
-        player_name = data.get('player_name', 'Player')
-        game.start_new_game(player_name)
+        player_name = data.get('player_name')
+        character_class = data.get('character_class')
+        if not player_name or not character_class:
+            return jsonify({"error": "Player name and character class are required"}), 400
+        game.start_new_game(player_name, character_class)
     session['game_started'] = True
     return jsonify(game.get_game_state())
 
