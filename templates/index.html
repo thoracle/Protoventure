@@ -35,8 +35,12 @@
         </div>
         <div id="game-play" style="display: none;">
             <div id="output"></div>
+            <div id="location-info"></div>
+            <div id="available-moves"></div>
             <input type="text" id="input" placeholder="Enter your command">
             <button onclick="sendCommand()">Send</button>
+            <button onclick="look()">Look Around</button>
+            <button onclick="getAvailableMoves()">Get Available Moves</button>
         </div>
     </div>
 
@@ -72,8 +76,7 @@
             .then(data => {
                 document.getElementById('start-game').style.display = 'none';
                 document.getElementById('game-play').style.display = 'block';
-                const output = document.getElementById('output');
-                output.innerHTML = `<p>Welcome back, ${data.player.name}! Your adventure continues.</p>`;
+                updateGameState(data);
             });
         }
 
@@ -93,8 +96,39 @@
             .then(data => {
                 document.getElementById('dragon-bonding').style.display = 'none';
                 document.getElementById('game-play').style.display = 'block';
-                const output = document.getElementById('output');
-                output.innerHTML += `<p>${data.message}</p>`;
+                updateGameState(data);
+            });
+        }
+
+        function updateGameState(data) {
+            const output = document.getElementById('output');
+            const locationInfo = document.getElementById('location-info');
+            const availableMoves = document.getElementById('available-moves');
+
+            output.innerHTML += `<p>${data.message}</p>`;
+            locationInfo.innerHTML = `<p>${data.game_state.current_location}</p>`;
+            availableMoves.innerHTML = `<p>Available moves: ${data.game_state.available_moves.join(', ')}</p>`;
+        }
+
+        function look() {
+            sendAction('look');
+        }
+
+        function getAvailableMoves() {
+            sendAction('get_moves');
+        }
+
+        function sendAction(action) {
+            fetch('/action', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({action: action}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                updateGameState(data);
             });
         }
 
@@ -103,18 +137,11 @@
             const command = input.value;
             input.value = '';
 
-            fetch('/action', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({action: command}),
-            })
-            .then(response => response.json())
-            .then(data => {
-                const output = document.getElementById('output');
-                output.innerHTML += `<p>${data.message}</p>`;
-            });
+            if (command.startsWith('move_to')) {
+                sendAction(command);
+            } else {
+                sendAction(command);
+            }
         }
     </script>
 </body>
