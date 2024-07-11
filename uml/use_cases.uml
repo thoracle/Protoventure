@@ -1,53 +1,125 @@
 @startuml
-left to right direction
-actor Player
+skinparam classAttributeIconSize 0
 
-rectangle "Dragon Riding Adventure Game" {
-  usecase "Create Character" as UC1
-  usecase "Choose Name" as UC1_1
-  usecase "Select Class" as UC1_2
-  usecase "Bond with Dragon" as UC2
-  usecase "Name Dragon" as UC2_1
-  usecase "Choose Dragon Color" as UC2_2
-  usecase "Select Dragon Breed" as UC2_3
-  usecase "Explore World" as UC3
-  usecase "Look Around" as UC3_1
-  usecase "Move to Location" as UC3_2
-  usecase "Engage in Combat" as UC4
-  usecase "Attack Enemy" as UC4_1
-  usecase "Take Damage" as UC4_2
-  usecase "Defeat Enemy" as UC4_3
-  usecase "Check Status" as UC5
-  usecase "Save Game" as UC6
-  usecase "Load Game" as UC7
-  usecase "Ride Dragon" as UC8
-  usecase "Mount Dragon" as UC8_1
-  usecase "Fly to Location" as UC8_2
-  usecase "Dismount Dragon" as UC8_3
+class Game {
+  -player: Player
+  -world: World
+  -config: Dict
+  -in_combat: bool
+  -current_enemy: Enemy
+  +__init__()
+  +load_config()
+  +start_new_game(player_name: str, character_class: str)
+  +load_game()
+  +save_game()
+  +bond_with_dragon(dragon_name: str, dragon_color: str, dragon_breed: str): str
+  +initiate_combat(enemy: Enemy): str
+  +player_turn(action: str): str
+  +enemy_turn(enemy: Enemy): List[str]
+  +use_item_in_combat(): str
+  +mount_dragon(): str
+  +dismount_dragon(): str
+  +fly_to_location(location: str): str
+  +view_inventory(): str
+  +use_item(item_name: str): str
+  +process_action(action: str): str
+  +get_game_state(): Dict
 }
 
-Player --> UC1
-UC1 <|-- UC1_1
-UC1 <|-- UC1_2
-Player --> UC2
-UC2 <|-- UC2_1
-UC2 <|-- UC2_2
-UC2 <|-- UC2_3
-Player --> UC3
-UC3 <|-- UC3_1
-UC3 <|-- UC3_2
-Player --> UC4
-UC4 <|-- UC4_1
-UC4 <|-- UC4_2
-UC4 <|-- UC4_3
-Player --> UC5
-Player --> UC6
-Player --> UC7
-Player --> UC8
-UC8 <|-- UC8_1
-UC8 <|-- UC8_2
-UC8 <|-- UC8_3
+class Player {
+  +name: str
+  +character_class: str
+  +level: int
+  +experience: int
+  +health: int
+  +max_health: int
+  +mana: int
+  +max_mana: int
+  +strength: int
+  +dexterity: int
+  +intelligence: int
+  +inventory: List[Item]
+  +max_inventory_size: int
+  +dragon: Dragon
+  +attack: int
+  +defense: int
+  +speed: int
+  +__init__(name: str, character_class: str)
+  +take_damage(damage: int): int
+  +is_defeated(): bool
+  +attack_enemy(): Tuple[str, int]
+  +special_ability(): Tuple[str, int]
+  +gain_experience(amount: int)
+  +level_up()
+  +bond_with_dragon(dragon: Dragon)
+  +add_item(item: Item): bool
+  +remove_item(item_name: str): Item
+  +use_item(item_name: str): str
+  +to_dict(): Dict
+  +from_dict(data: Dict): Player
+}
 
-UC3_2 ..> UC4 : <<includes>>
-UC8_2 ..> UC3 : <<extends>>
+class Dragon {
+  +name: str
+  +color: str
+  +breed: str
+  +level: int
+  +health: int
+  +energy: int
+  +bond_level: int
+  +abilities: List[str]
+  +is_ridden: bool
+  +__init__(name: str, color: str, breed: str)
+  +mount(): bool
+  +dismount()
+  +fly_to(location: str): bool
+  +to_dict(): Dict
+  +from_dict(data: Dict): Dragon
+}
+
+class World {
+  -locations: Dict[str, Dict]
+  -current_location: str
+  +__init__()
+  +move_to(location: str): bool
+  +get_current_location_info(): str
+  +get_available_moves(): List[str]
+  +get_current_enemies(): List[Enemy]
+  +remove_enemy(enemy: Enemy)
+  +get_all_locations(): List[str]
+  +to_dict(): Dict
+  +from_dict(data: Dict): World
+}
+
+class Enemy {
+  +name: str
+  +health: int
+  +max_health: int
+  +attack: int
+  +defense: int
+  +speed: int
+  +__init__(name: str, health: int, attack: int, defense: int, speed: int)
+  +take_damage(damage: int): int
+  +is_defeated(): bool
+  +attack_player(): Tuple[str, int]
+  +to_dict(): Dict
+  +from_dict(data: Dict): Enemy
+}
+
+class Item {
+  +name: str
+  +description: str
+  +item_type: str
+  +effect_value: int
+  +__init__(name: str, description: str, item_type: str, effect_value: int)
+  +use(player: Player): str
+  +to_dict(): Dict
+  +from_dict(data: Dict): Item
+}
+
+Game "1" -- "1" Player
+Game "1" -- "1" World
+World "1" -- "*" Enemy
+Player "1" -- "1" Dragon
+Player "1" -- "*" Item
 @enduml
