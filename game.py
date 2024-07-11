@@ -12,6 +12,8 @@ class Game:
         self.player = None
         self.world = None
         self.load_config()
+        self.in_combat = False
+        self.current_enemy = None
 
     def load_config(self):
         with open('config.json', 'r') as config_file:
@@ -56,29 +58,135 @@ class Game:
         return f"{self.player.name} has bonded with {dragon.name} the {dragon.color} {dragon.breed} dragon!"
 
     def initiate_combat(self, enemy):
+        self.in_combat = True
+        self.current_enemy = enemy
         combat_log = [f"You encounter a {enemy.name}!"]
-        while not self.player.is_defeated() and not enemy.is_defeated():
-            # Player's turn
-            damage = self.player.attack_enemy()
-            actual_damage = enemy.take_damage(damage)
-            combat_log.append(f"You deal {actual_damage} damage to the {enemy.name}.")
-            
-            if enemy.is_defeated():
-                combat_log.append(f"You have defeated the {enemy.name}!")
-                self.world.remove_enemy(enemy)
-                break
-            
-            # Enemy's turn
-            damage = enemy.attack_player()
-            actual_damage = self.player.take_damage(damage)
-            combat_log.append(f"The {enemy.name} deals {actual_damage} damage to you.")
-            
-            if self.player.is_defeated():
-                combat_log.append("You have been defeated!")
-                break
-        
-        self.save_game()
         return "\n".join(combat_log)
+
+    def player_turn(self, action):
+        enemy = self.current_enemy
+        log = []
+        
+        if action == "attack":
+            attack_type, damage = self.player.attack_enemy()
+            if attack_type == "miss":
+                log.append("Your attack missed!")
+            else:
+                actual_damage = enemy.take_damage(damage)
+                if attack_type == "critical":
+                    log.append(f"Critical hit! You deal {actual_damage} damage to the {enemy.name}!")
+                else:
+                    log.append(f"You deal {actual_damage} damage to the {enemy.name}.")
+        elif action == "special_ability":
+            ability, damage = self.player.special_ability()
+            actual_damage = enemy.take_damage(damage)
+            log.append(f"You use {ability} and deal {actual_damage} damage to the {enemy.name}!")
+        elif action == "use_item":
+            log.append(self.use_item_in_combat())
+        else:
+            log.append("Invalid action. You lose your turn!")
+
+        if enemy.is_defeated():
+            log.append(f"You have defeated the {enemy.name}!")
+            exp_gain = enemy.max_health * 2
+            self.player.gain_experience(exp_gain)
+            log.append(f"You gained {exp_gain} experience points!")
+            self.world.remove_enemy(enemy)
+            self.in_combat = False
+            self.current_enemy = None
+        else:
+            log.extend(self.enemy_turn(enemy))
+
+        if self.player.is_defeated():
+            log.append("You have been defeated!")
+            self.in_combat = False
+            self.current_enemy = None
+
+        self.save_game()
+        return "\n".join(log)
+
+    def enemy_turn(self, enemy):
+        log = []
+        log.append(f"{enemy.name}'s turn:")
+        attack_type, damage = enemy.attack_player()
+        if attack_type == "miss":
+            log.append(f"The {enemy.name}'s attack missed!")
+        else:
+            actual_damage = self.player.take_damage(damage)
+            if attack_type == "critical":
+                log.append(f"Critical hit! The {enemy.name} deals {actual_damage} damage to you!")
+            else:
+                log.append(f"The {enemy.name} deals {actual_damage} damage to you.")
+
+        return log
+
+    def use_item_in_combat(self):
+        if not self.player.inventory:
+            return "You have no items to use!"
+        
+        items = [item.name for item in self.player.inventory]
+        return f"Available items: {', '.join(items)}"
+
+    def use_item(self, item_name):
+        result = self.player.use_item(item_name)
+        self.save_game()
+        return result
+
+    def process_action(self, action):
+        if self.in_combat:
+            if action in ["attack", "special_ability", "use_item"]:
+                return self.player_turn(action)
+            else:
+                return "Invalid combat action."
+
+        if action == "look":
+            return self.world.get_current_location_info()
+        elif action.startswith("move_to"):
+            _, location = action.split(":")
+            if self.world.move_to(location):
+                self.save_game()
+                enemies = self.world.get_current_enemies()
+                if enemies:
+                    return self.initiate_combat(random.choice(enemies))
+                else:
+                    return f"You have moved to {self.world.locations[location]['name']}. {self.world.locations[location]['description']}"
+            else:
+                return "You can't move there from your current location."
+        elif action == "mount_dragon":
+            return self.mount_dragon()
+        elif action == "dismount_dragon":
+            return self.dismount_dragon()
+        elif action.startswith("fly_to"):
+            _, location = action.split(":")
+            return self.fly_to_location(location)
+        elif action == "status":
+            status = f"Health: {self.player.health}/{self.player.max_health}, Mana: {self.player.mana}/{self.player.max_mana}, Attack: {self.player.attack}, Defense: {self.player.defense}, Speed: {self.player.speed}"
+            if self.player.dragon:
+                status += f"\nDragon: {self.player.dragon.name}, Energy: {self.player.dragon.energy}"
+                if self.player.dragon.is_ridden:
+                    status += " (mounted)"
+            return status
+        elif action.startswith("bond_with_dragon"):
+            _, name, color, breed = action.split(":")
+            return self.bond_with_dragon(name, color, breed)
+        elif action == "view_inventory":
+            return self.view_inventory()
+        elif action.startswith("use_item:"):
+            _, item_name = action.split(":")
+            return self.use_item(item_name)
+        else:
+            return f"Unknown action: {action}"
+
+    def get_game_state(self):
+        return {
+            "player": self.player.to_dict(),
+            "world": self.world.to_dict(),
+            "current_location": self.world.get_current_location_info(),
+            "available_moves": self.world.get_available_moves(),
+            "all_locations": self.world.get_all_locations(),
+            "in_combat": self.in_combat,
+            "current_enemy": self.current_enemy.to_dict() if self.current_enemy else None
+        }
 
     def mount_dragon(self):
         if self.player.dragon:
@@ -115,56 +223,3 @@ class Game:
             return "Your inventory is empty."
         inventory_list = [f"{item.name}: {item.description}" for item in self.player.inventory]
         return "Inventory:\n" + "\n".join(inventory_list)
-
-    def use_item(self, item_name):
-        result = self.player.use_item(item_name)
-        self.save_game()
-        return result
-
-    def process_action(self, action):
-        if action == "look":
-            return self.world.get_current_location_info()
-        elif action.startswith("move_to"):
-            _, location = action.split(":")
-            if self.world.move_to(location):
-                self.save_game()
-                enemies = self.world.get_current_enemies()
-                if enemies:
-                    return self.initiate_combat(random.choice(enemies))
-                else:
-                    return f"You have moved to {self.world.locations[location]['name']}. {self.world.locations[location]['description']}"
-            else:
-                return "You can't move there from your current location."
-        elif action == "mount_dragon":
-            return self.mount_dragon()
-        elif action == "dismount_dragon":
-            return self.dismount_dragon()
-        elif action.startswith("fly_to"):
-            _, location = action.split(":")
-            return self.fly_to_location(location)
-        elif action == "status":
-            status = f"Health: {self.player.health}, Attack: {self.player.attack}, Defense: {self.player.defense}"
-            if self.player.dragon:
-                status += f"\nDragon: {self.player.dragon.name}, Energy: {self.player.dragon.energy}"
-                if self.player.dragon.is_ridden:
-                    status += " (mounted)"
-            return status
-        elif action.startswith("bond_with_dragon"):
-            _, name, color, breed = action.split(":")
-            return self.bond_with_dragon(name, color, breed)
-        elif action == "view_inventory":
-            return self.view_inventory()
-        elif action.startswith("use_item:"):
-            _, item_name = action.split(":")
-            return self.use_item(item_name)
-        else:
-            return f"Unknown action: {action}"
-
-    def get_game_state(self):
-        return {
-            "player": self.player.to_dict(),
-            "world": self.world.to_dict(),
-            "current_location": self.world.get_current_location_info(),
-            "available_moves": self.world.get_available_moves(),
-            "all_locations": self.world.get_all_locations()
-        }
