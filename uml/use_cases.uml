@@ -1,125 +1,50 @@
 @startuml
-skinparam classAttributeIconSize 0
+left to right direction
+actor Player
 
-class Game {
-  -player: Player
-  -world: World
-  -config: Dict
-  -in_combat: bool
-  -current_enemy: Enemy
-  +__init__()
-  +load_config()
-  +start_new_game(player_name: str, character_class: str)
-  +load_game()
-  +save_game()
-  +bond_with_dragon(dragon_name: str, dragon_color: str, dragon_breed: str): str
-  +initiate_combat(enemy: Enemy): str
-  +player_turn(action: str): str
-  +enemy_turn(enemy: Enemy): List[str]
-  +use_item_in_combat(): str
-  +mount_dragon(): str
-  +dismount_dragon(): str
-  +fly_to_location(location: str): str
-  +view_inventory(): str
-  +use_item(item_name: str): str
-  +process_action(action: str): str
-  +get_game_state(): Dict
+rectangle "Dragon Riding Adventure Game" {
+  usecase "Create Character" as UC1
+  usecase "Bond with Dragon" as UC2
+  usecase "Explore World" as UC3
+  usecase "Move to Location" as UC3_1
+  usecase "Look Around" as UC3_2
+  usecase "Ride Dragon" as UC4
+  usecase "Mount Dragon" as UC4_1
+  usecase "Fly to Location" as UC4_2
+  usecase "Dismount Dragon" as UC4_3
+  usecase "Engage in Combat" as UC5
+  usecase "Attack Enemy" as UC5_1
+  usecase "Use Special Ability" as UC5_2
+  usecase "Use Item in Combat" as UC5_3
+  usecase "Manage Inventory" as UC6
+  usecase "View Inventory" as UC6_1
+  usecase "Use Item" as UC6_2
+  usecase "Check Status" as UC7
+  usecase "Save Game" as UC8
+  usecase "Load Game" as UC9
 }
 
-class Player {
-  +name: str
-  +character_class: str
-  +level: int
-  +experience: int
-  +health: int
-  +max_health: int
-  +mana: int
-  +max_mana: int
-  +strength: int
-  +dexterity: int
-  +intelligence: int
-  +inventory: List[Item]
-  +max_inventory_size: int
-  +dragon: Dragon
-  +attack: int
-  +defense: int
-  +speed: int
-  +__init__(name: str, character_class: str)
-  +take_damage(damage: int): int
-  +is_defeated(): bool
-  +attack_enemy(): Tuple[str, int]
-  +special_ability(): Tuple[str, int]
-  +gain_experience(amount: int)
-  +level_up()
-  +bond_with_dragon(dragon: Dragon)
-  +add_item(item: Item): bool
-  +remove_item(item_name: str): Item
-  +use_item(item_name: str): str
-  +to_dict(): Dict
-  +from_dict(data: Dict): Player
-}
+Player --> UC1
+Player --> UC2
+Player --> UC3
+UC3 <|-- UC3_1
+UC3 <|-- UC3_2
+Player --> UC4
+UC4 <|-- UC4_1
+UC4 <|-- UC4_2
+UC4 <|-- UC4_3
+Player --> UC5
+UC5 <|-- UC5_1
+UC5 <|-- UC5_2
+UC5 <|-- UC5_3
+Player --> UC6
+UC6 <|-- UC6_1
+UC6 <|-- UC6_2
+Player --> UC7
+Player --> UC8
+Player --> UC9
 
-class Dragon {
-  +name: str
-  +color: str
-  +breed: str
-  +level: int
-  +health: int
-  +energy: int
-  +bond_level: int
-  +abilities: List[str]
-  +is_ridden: bool
-  +__init__(name: str, color: str, breed: str)
-  +mount(): bool
-  +dismount()
-  +fly_to(location: str): bool
-  +to_dict(): Dict
-  +from_dict(data: Dict): Dragon
-}
-
-class World {
-  -locations: Dict[str, Dict]
-  -current_location: str
-  +__init__()
-  +move_to(location: str): bool
-  +get_current_location_info(): str
-  +get_available_moves(): List[str]
-  +get_current_enemies(): List[Enemy]
-  +remove_enemy(enemy: Enemy)
-  +get_all_locations(): List[str]
-  +to_dict(): Dict
-  +from_dict(data: Dict): World
-}
-
-class Enemy {
-  +name: str
-  +health: int
-  +max_health: int
-  +attack: int
-  +defense: int
-  +speed: int
-  +__init__(name: str, health: int, attack: int, defense: int, speed: int)
-  +take_damage(damage: int): int
-  +is_defeated(): bool
-  +attack_player(): Tuple[str, int]
-  +to_dict(): Dict
-  +from_dict(data: Dict): Enemy
-}
-
-class Item {
-  +name: str
-  +description: str
-  +item_type: str
-  +effect_value: int
-  +__init__(name: str, description: str, item_type: str, effect_value: int)
-  +use(player: Player): str
-  +to_dict(): Dict
-  +from_dict(data: Dict): Item
-}
-
-Game "1" -- "1" Player
-Game "1" -- "1" World
-World "1" -- "*" Enemy
-Player "1" -- "1" Dragon
-Player "1" -- "*" Item
+UC4 ..> UC3 : <<extends>>
+UC5 ..> UC3 : <<extends>>
+UC5_3 ..> UC6 : <<includes>>
 @enduml
