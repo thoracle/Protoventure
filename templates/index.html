@@ -10,6 +10,11 @@
     <div id="game-container">
         <div id="start-game">
             <input type="text" id="player-name" placeholder="Enter your name">
+            <select id="character-class">
+                <option value="warrior">Warrior</option>
+                <option value="mage">Mage</option>
+                <option value="rogue">Rogue</option>
+            </select>
             <button onclick="startGame()">Start New Game</button>
             <button onclick="loadGame()">Load Game</button>
         </div>
@@ -23,19 +28,20 @@
     <script>
         function startGame() {
             const playerName = document.getElementById('player-name').value;
+            const characterClass = document.getElementById('character-class').value;
             fetch('/start', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({player_name: playerName}),
+                body: JSON.stringify({player_name: playerName, character_class: characterClass}),
             })
             .then(response => response.json())
             .then(data => {
                 document.getElementById('start-game').style.display = 'none';
                 document.getElementById('game-play').style.display = 'block';
                 const output = document.getElementById('output');
-                output.innerHTML = `<p>Welcome, ${data.player.name}! Your adventure begins.</p>`;
+                output.innerHTML = `<p>Welcome, ${data.player.name} the ${data.player.character_class}! Your adventure begins.</p>`;
             });
         }
 
