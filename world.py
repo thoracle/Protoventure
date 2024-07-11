@@ -1,5 +1,4 @@
 from enemy import Enemy
-import random
 
 class World:
     def __init__(self):
@@ -87,14 +86,28 @@ class World:
         self.locations[self.current_location]["enemies"].remove(enemy)
 
     def to_dict(self):
+        serializable_locations = {}
+        for loc_name, loc_data in self.locations.items():
+            serializable_locations[loc_name] = {
+                "name": loc_data["name"],
+                "description": loc_data["description"],
+                "connected_locations": loc_data["connected_locations"],
+                "enemies": [enemy.to_dict() for enemy in loc_data["enemies"]]
+            }
         return {
-            "locations": self.locations,
+            "locations": serializable_locations,
             "current_location": self.current_location
         }
 
     @classmethod
     def from_dict(cls, data):
         world = cls()
-        world.locations = data['locations']
         world.current_location = data['current_location']
+        for loc_name, loc_data in data['locations'].items():
+            world.locations[loc_name] = {
+                "name": loc_data["name"],
+                "description": loc_data["description"],
+                "connected_locations": loc_data["connected_locations"],
+                "enemies": [Enemy(**enemy_data) for enemy_data in loc_data["enemies"]]
+            }
         return world
