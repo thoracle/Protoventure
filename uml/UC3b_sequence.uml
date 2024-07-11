@@ -1,0 +1,34 @@
+@startuml
+title UC3: Explore World
+
+actor Player
+participant "UI" as UI
+participant "Game System" as Game
+participant "World" as World
+database "Database" as DB
+
+Player -> UI: Click "Look Around" button
+UI -> Game: Send 'look' action
+Game -> World: get_current_location_info()
+World --> Game: Return location description
+Game -> UI: Send location information
+UI -> Player: Display current location info
+
+Game -> World: get_available_moves()
+World --> Game: Return list of available moves
+Game -> UI: Send available moves
+UI -> UI: Generate move buttons
+UI -> Player: Display move buttons
+
+Player -> UI: Click move button
+UI -> Game: Send 'move_to' action with location
+Game -> World: move_to(location)
+World -> World: Update current_location
+World --> Game: Confirm move
+Game -> DB: Save updated game state
+DB --> Game: Confirm save
+Game -> UI: Send updated location info
+UI -> UI: Update display and move buttons
+UI -> Player: Display new location info
+
+@enduml
