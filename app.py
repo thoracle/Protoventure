@@ -30,7 +30,7 @@ def process_action():
     
     action = request.json.get('action')
     result = game.process_action(action)
-    return jsonify(result)
+    return jsonify({"message": result, "game_state": game.get_game_state()})
 
 if __name__ == '__main__':
     app.run(debug=True)
