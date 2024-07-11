@@ -1,0 +1,47 @@
+@startuml
+title UC8: Ride Dragon
+
+actor Player
+participant "Game System" as Game
+participant "Player" as PlayerObj
+participant "Dragon" as DragonObj
+participant "World" as World
+
+Player -> Game: Request to mount dragon
+Game -> PlayerObj: Check if player has a dragon
+PlayerObj --> Game: Return dragon
+Game -> DragonObj: mount()
+alt Dragon has enough energy
+    DragonObj -> DragonObj: Reduce energy
+    DragonObj --> Game: Confirm mounted
+    Game --> Player: Display "Dragon mounted" message
+else Dragon is too tired
+    DragonObj --> Game: Return false
+    Game --> Player: Display "Dragon too tired" message
+end
+
+Player -> Game: Request to fly to location
+Game -> DragonObj: Check if dragon is mounted
+alt Dragon is mounted
+    Game -> DragonObj: fly_to(location)
+    alt Dragon has enough energy
+        DragonObj -> DragonObj: Reduce energy
+        DragonObj --> Game: Confirm flight
+        Game -> World: Update current location
+        World --> Game: Confirm location update
+        Game --> Player: Display new location info
+    else Dragon is too tired
+        DragonObj --> Game: Return false
+        Game --> Player: Display "Dragon too tired to fly" message
+    end
+else Dragon is not mounted
+    Game --> Player: Display "Must mount dragon first" message
+end
+
+Player -> Game: Request to dismount dragon
+Game -> DragonObj: dismount()
+DragonObj -> DragonObj: Set is_ridden to false
+DragonObj --> Game: Confirm dismount
+Game --> Player: Display "Dismounted dragon" message
+
+@enduml
