@@ -50,13 +50,25 @@ class Game:
         if action.startswith("bond_with_dragon"):
             _, name, color, breed = action.split(":")
             return self.bond_with_dragon(name, color, breed)
-        # Handle other actions here
-        result = f"Processed action: {action}"
-        self.save_game()
-        return result
+        elif action == "look":
+            return self.world.get_current_location_info()
+        elif action.startswith("move_to"):
+            _, location = action.split(":")
+            if self.world.move_to(location):
+                self.save_game()
+                return f"You have moved to {self.world.locations[location]['name']}. {self.world.locations[location]['description']}"
+            else:
+                return "You can't move there from your current location."
+        elif action == "get_moves":
+            moves = self.world.get_available_moves()
+            return f"You can move to: {', '.join(moves)}"
+        else:
+            return f"Unknown action: {action}"
 
     def get_game_state(self):
         return {
             "player": self.player.to_dict(),
-            "world": self.world.to_dict()
+            "world": self.world.to_dict(),
+            "current_location": self.world.get_current_location_info(),
+            "available_moves": self.world.get_available_moves()
         }
