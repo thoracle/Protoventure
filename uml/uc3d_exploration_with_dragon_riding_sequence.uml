@@ -1,0 +1,49 @@
+@startuml
+title UC3: Explore World
+
+actor Player
+participant "Game System" as Game
+participant "World" as World
+participant "Dragon" as DragonObj
+participant "Enemy" as Enemy
+
+Player -> Game: Request to look around
+Game -> World: get_current_location_info()
+World --> Game: Return location description
+Game --> Player: Display current location info
+
+Player -> Game: Request available moves
+Game -> World: get_available_moves()
+World --> Game: Return list of available moves
+Game --> Player: Display available moves
+
+alt Move on foot
+    Player -> Game: Choose to move to a location
+    Game -> World: move_to(location)
+    World -> World: Update current_location
+    World --> Game: Confirm move
+    Game -> World: get_current_enemies()
+    World --> Game: Return enemies (if any)
+    alt Enemies present
+        Game -> Game: initiate_combat(enemy)
+        Game -> Enemy: Attack and defend actions
+        Enemy --> Game: Combat results
+        Game --> Player: Display combat results
+    end
+    Game --> Player: Display new location info
+else Fly with dragon
+    Player -> Game: Choose to fly to a location
+    Game -> DragonObj: fly_to(location)
+    alt Dragon has enough energy
+        DragonObj -> DragonObj: Reduce energy
+        DragonObj --> Game: Confirm flight
+        Game -> World: Update current_location
+        World --> Game: Confirm location update
+        Game --> Player: Display new location info
+    else Dragon is too tired
+        DragonObj --> Game: Return false
+        Game --> Player: Display "Dragon too tired to fly" message
+    end
+end
+
+@enduml
