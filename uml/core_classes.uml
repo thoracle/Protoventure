@@ -2,262 +2,78 @@
 skinparam classAttributeIconSize 0
 
 class Game {
-  +start_game()
-  +process_command(command: str)
-  +save_game()
+  -player: Player
+  -world: World
+  -config: Dict
+  +__init__()
+  +load_config()
+  +start_new_game(player_name: str, character_class: str)
   +load_game()
-  +quit_game()
-  +update()
+  +save_game()
+  +bond_with_dragon(dragon_name: str, dragon_color: str, dragon_breed: str): str
+  +process_action(action: str): Dict
+  +get_game_state(): Dict
 }
 
 class Player {
   +name: str
+  +character_class: str
   +level: int
   +experience: int
-  +inventory: Inventory
-  +skills: Dict[str, Skill]
-  +faction_standings: Dict[Faction, int]
-  +current_location: Location
-  +guild: Guild
-  +perform_action(action: str)
-  +level_up()
-  +update_faction_standing(faction: Faction, change: int)
-  +join_guild(guild: Guild)
-  +leave_guild()
+  +health: int
+  +mana: int
+  +strength: int
+  +dexterity: int
+  +intelligence: int
+  +inventory: List[Item]
+  +dragon: Dragon
+  +__init__(name: str, character_class: str)
+  +bond_with_dragon(dragon: Dragon)
+  +to_dict(): Dict
+  +from_dict(data: Dict): Player
 }
 
 class Dragon {
   +name: str
+  +color: str
+  +breed: str
   +level: int
-  +abilities: List[Ability]
-  +appearance: DragonAppearance
-  +use_ability(ability: Ability)
-  +level_up()
-  +change_appearance(appearance: DragonAppearance)
+  +health: int
+  +energy: int
+  +bond_level: int
+  +abilities: List[str]
+  +__init__(name: str, color: str, breed: str)
+  +to_dict(): Dict
+  +from_dict(data: Dict): Dragon
 }
 
-class DragonRidingManager {
-  +mount_dragon(player: Player, dragon: Dragon)
-  +dismount_dragon(player: Player, dragon: Dragon)
-  +process_flight_input(input: str)
-  +use_dragon_ability_while_flying(ability: Ability)
+class World {
+  -locations: Dict[str, Location]
+  -current_location: str
+  +__init__()
+  +to_dict(): Dict
+  +from_dict(data: Dict): World
 }
 
 class Location {
   +name: str
   +description: str
-  +connected_locations: List[Location]
-  +npcs: List[NPC]
-  +items: List[Item]
-  +resources: List[Resource]
-  +weather: Weather
-  +get_available_actions()
-  +update_weather(weather: Weather)
-}
-
-class Faction {
-  +name: str
-  +description: str
-  +relations: Dict[Faction, int]
-  +get_player_standing(player: Player): int
-  +update_player_standing(player: Player, change: int)
-  +declare_war(other_faction: Faction)
-  +make_peace(other_faction: Faction)
-}
-
-class Quest {
-  +title: str
-  +description: str
-  +objectives: List[Objective]
-  +rewards: List[Reward]
-  +is_completed: bool
-  +assign_to_player(player: Player)
-  +update_progress(objective: Objective)
-  +complete_quest()
-}
-
-class Inventory {
-  +items: List[Item]
-  +max_capacity: int
-  +add_item(item: Item)
-  +remove_item(item: Item)
-  +use_item(item: Item)
+  +connected_locations: List[str]
+  +__init__(name: str, description: str)
 }
 
 class Item {
   +name: str
   +description: str
   +value: int
+  +__init__(name: str, description: str, value: int)
   +use(player: Player)
 }
 
-class Ability {
-  +name: str
-  +description: str
-  +use(user: Any, target: Any)
-}
-
-class NPC {
-  +name: str
-  +faction: Faction
-  +dialogue: Dict[str, str]
-  +quests: List[Quest]
-  +inventory: Inventory
-  +interact(player: Player)
-  +trade_with_player(player: Player)
-}
-
-class CombatManager {
-  +initiate_combat(player: Player, enemy: Enemy)
-  +process_combat_round()
-  +resolve_combat()
-}
-
-class CraftingManager {
-  +recipes: List[Recipe]
-  +craft_item(player: Player, recipe: Recipe)
-  +dismantle_item(player: Player, item: Item)
-}
-
-class AlchemyManager {
-  +potions: List[Potion]
-  +brew_potion(player: Player, recipe: Recipe)
-  +discover_new_recipe(player: Player)
-}
-
-class WeatherManager {
-  +current_weather: Weather
-  +update_weather(location: Location)
-  +apply_weather_effects(player: Player, location: Location)
-}
-
-class TimeManager {
-  +current_time: DateTime
-  +update_time()
-  +check_time_based_events()
-}
-
-class EconomyManager {
-  +market_prices: Dict[Item, int]
-  +update_prices()
-  +process_trade(buyer: Any, seller: Any, item: Item, quantity: int)
-}
-
-class WorldGenerator {
-  +generate_new_world()
-  +generate_area_details(location: Location)
-}
-
-class EcosystemManager {
-  +update_ecosystem(location: Location)
-  +simulate_wildlife_behavior()
-  +update_plant_growth()
-}
-
-class FactionManager {
-  +factions: List[Faction]
-  +update_faction_relations()
-  +process_faction_event(event: FactionEvent)
-}
-
-class SkillManager {
-  +update_skill_experience(player: Player, skill: Skill, exp: int)
-  +check_skill_level_up(player: Player, skill: Skill)
-  +apply_skill_decay()
-}
-
-class StoryManager {
-  +story_state: Dict[str, Any]
-  +update_story_state(event: StoryEvent)
-  +generate_dynamic_quest()
-  +process_player_choice(choice: str)
-}
-
-class QuestManager {
-  +available_quests: List[Quest]
-  +active_quests: List[Quest]
-  +generate_quest(context: Dict[str, Any])
-  +update_quest_progress(player: Player, quest: Quest)
-}
-
-class DialogueSystem {
-  +initiate_dialogue(player: Player, npc: NPC)
-  +process_dialogue_choice(choice: str)
-}
-
-class UIManager {
-  +current_interface: Interface
-  +update_display()
-  +handle_user_input(input: str)
-}
-
-class Guild {
-  +name: str
-  +level: int
-  +experience: int
-  +members: List[Player]
-  +leader: Player
-  +quests: List[GuildQuest]
-  +add_member(player: Player)
-  +remove_member(player: Player)
-  +assign_leader(player: Player)
-  +level_up()
-  +start_guild_quest(quest: GuildQuest)
-  +complete_guild_quest(quest: GuildQuest)
-}
-
-class GuildQuest {
-  +title: str
-  +description: str
-  +requirements: Dict[str, int]
-  +rewards: Dict[str, int]
-  +progress: Dict[str, int]
-  +is_completed: bool
-  +update_progress(contribution: Dict[str, int])
-  +check_completion()
-}
-
-class GuildManager {
-  +guilds: List[Guild]
-  +create_guild(name: str, leader: Player): Guild
-  +disband_guild(guild: Guild)
-  +process_join_request(player: Player, guild: Guild)
-  +generate_guild_quests(guild: Guild): List[GuildQuest]
-  +update_guild_rankings()
-}
-
 Game "1" -- "1" Player
-Game "1" -- "1" DragonRidingManager
-Game "1" -- "1" CombatManager
-Game "1" -- "1" CraftingManager
-Game "1" -- "1" AlchemyManager
-Game "1" -- "1" WeatherManager
-Game "1" -- "1" TimeManager
-Game "1" -- "1" EconomyManager
-Game "1" -- "1" WorldGenerator
-Game "1" -- "1" EcosystemManager
-Game "1" -- "1" FactionManager
-Game "1" -- "1" SkillManager
-Game "1" -- "1" StoryManager
-Game "1" -- "1" QuestManager
-Game "1" -- "1" DialogueSystem
-Game "1" -- "1" UIManager
-Game "1" -- "1" GuildManager
-
+Game "1" -- "1" World
+World "1" -- "*" Location
+Player "1" -- "*" Item
 Player "1" -- "1" Dragon
-Player "1" -- "1" Inventory
-Player "1" -- "1" Location
-Player "1" -- "*" Faction
-Player "1" -- "*" Skill
-Faction "1" -- "*" Quest
-Location "1" -- "*" NPC
-Location "1" -- "*" Item
-Location "1" -- "*" Resource
-NPC "1" -- "1" Inventory
-
-GuildManager "1" -- "*" Guild
-Guild "1" -- "*" Player
-Guild "1" -- "*" GuildQuest
-Player "0..1" -- "0..1" Guild
 
 @enduml
