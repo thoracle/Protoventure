@@ -3,6 +3,7 @@ import sqlite3
 from player import Player
 from world import World
 from dragon import Dragon
+from enemy import Enemy
 import random
 
 class Game:
