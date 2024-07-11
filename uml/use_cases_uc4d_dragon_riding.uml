@@ -1,0 +1,53 @@
+@startuml
+left to right direction
+actor Player
+
+rectangle "Dragon Riding Adventure Game" {
+  usecase "Create Character" as UC1
+  usecase "Choose Name" as UC1_1
+  usecase "Select Class" as UC1_2
+  usecase "Bond with Dragon" as UC2
+  usecase "Name Dragon" as UC2_1
+  usecase "Choose Dragon Color" as UC2_2
+  usecase "Select Dragon Breed" as UC2_3
+  usecase "Explore World" as UC3
+  usecase "Look Around" as UC3_1
+  usecase "Move to Location" as UC3_2
+  usecase "Engage in Combat" as UC4
+  usecase "Attack Enemy" as UC4_1
+  usecase "Take Damage" as UC4_2
+  usecase "Defeat Enemy" as UC4_3
+  usecase "Check Status" as UC5
+  usecase "Save Game" as UC6
+  usecase "Load Game" as UC7
+  usecase "Ride Dragon" as UC8
+  usecase "Mount Dragon" as UC8_1
+  usecase "Fly to Location" as UC8_2
+  usecase "Dismount Dragon" as UC8_3
+}
+
+Player --> UC1
+UC1 <|-- UC1_1
+UC1 <|-- UC1_2
+Player --> UC2
+UC2 <|-- UC2_1
+UC2 <|-- UC2_2
+UC2 <|-- UC2_3
+Player --> UC3
+UC3 <|-- UC3_1
+UC3 <|-- UC3_2
+Player --> UC4
+UC4 <|-- UC4_1
+UC4 <|-- UC4_2
+UC4 <|-- UC4_3
+Player --> UC5
+Player --> UC6
+Player --> UC7
+Player --> UC8
+UC8 <|-- UC8_1
+UC8 <|-- UC8_2
+UC8 <|-- UC8_3
+
+UC3_2 ..> UC4 : <<includes>>
+UC8_2 ..> UC3 : <<extends>>
+@enduml
