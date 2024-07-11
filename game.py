@@ -73,6 +73,36 @@ class Game:
         self.save_game()
         return "\n".join(combat_log)
 
+    def mount_dragon(self):
+        if self.player.dragon:
+            if self.player.dragon.mount():
+                return f"You have mounted {self.player.dragon.name}."
+            else:
+                return f"{self.player.dragon.name} is too tired to be ridden right now."
+        else:
+            return "You don't have a dragon to mount."
+
+    def dismount_dragon(self):
+        if self.player.dragon and self.player.dragon.is_ridden:
+            self.player.dragon.dismount()
+            return f"You have dismounted {self.player.dragon.name}."
+        else:
+            return "You are not currently riding a dragon."
+
+    def fly_to_location(self, location):
+        if self.player.dragon and self.player.dragon.is_ridden:
+            if location in self.world.get_all_locations():
+                if self.player.dragon.fly_to(location):
+                    self.world.current_location = location
+                    self.save_game()
+                    return f"You have flown to {self.world.locations[location]['name']}. {self.world.locations[location]['description']}"
+                else:
+                    return f"{self.player.dragon.name} is too tired to fly right now."
+            else:
+                return "You can't fly to that location."
+        else:
+            return "You need to be riding a dragon to fly."
+
     def process_action(self, action):
         if action == "look":
             return self.world.get_current_location_info()
@@ -87,8 +117,20 @@ class Game:
                     return f"You have moved to {self.world.locations[location]['name']}. {self.world.locations[location]['description']}"
             else:
                 return "You can't move there from your current location."
+        elif action == "mount_dragon":
+            return self.mount_dragon()
+        elif action == "dismount_dragon":
+            return self.dismount_dragon()
+        elif action.startswith("fly_to"):
+            _, location = action.split(":")
+            return self.fly_to_location(location)
         elif action == "status":
-            return f"Health: {self.player.health}, Attack: {self.player.attack}, Defense: {self.player.defense}"
+            status = f"Health: {self.player.health}, Attack: {self.player.attack}, Defense: {self.player.defense}"
+            if self.player.dragon:
+                status += f"\nDragon: {self.player.dragon.name}, Energy: {self.player.dragon.energy}"
+                if self.player.dragon.is_ridden:
+                    status += " (mounted)"
+            return status
         elif action.startswith("bond_with_dragon"):
             _, name, color, breed = action.split(":")
             return self.bond_with_dragon(name, color, breed)
@@ -100,5 +142,6 @@ class Game:
             "player": self.player.to_dict(),
             "world": self.world.to_dict(),
             "current_location": self.world.get_current_location_info(),
-            "available_moves": self.world.get_available_moves()
+            "available_moves": self.world.get_available_moves(),
+            "all_locations": self.world.get_all_locations()
         }
