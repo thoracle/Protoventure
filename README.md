@@ -1,3 +1,12 @@
+experiment using UML to keep LLM on the rails while it generates a text based rpg of progressevly increasing complexity.
+
+to run app:
+1. python3 app.py
+2. launch web browswer with url: 127.0.0.1:5000
+3. get your dragon on!
+
+to recreate llm session:
+
 > = Prompts for Claude 3.5 Sonnet
 
 >Let’s co-design a text adventure game in PlantUML and python 3.​​​​​​​​​​​​​​​​
