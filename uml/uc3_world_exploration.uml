@@ -1,42 +1,34 @@
 @startuml
+title UC3: Explore World
+
 actor Player
 participant "Game System" as Game
-participant "Current Location" as CurrLoc
-participant "New Location" as NewLoc
-participant "Dragon" as Dragon
+participant "World" as World
+participant "UI" as UI
+database "Database" as DB
 
-Player -> Game: Request to move to a location
-activate Game
+Player -> UI: Request to look around
+UI -> Game: Send 'look' action
+Game -> World: get_current_location_info()
+World --> Game: Return location description
+Game -> UI: Send location information
+UI -> Player: Display current location info
 
-Game -> CurrLoc: Get connected locations
-CurrLoc --> Game: Return list of connected locations
-Game --> Player: Display available locations
+Player -> UI: Request available moves
+UI -> Game: Send 'get_moves' action
+Game -> World: get_available_moves()
+World --> Game: Return list of available moves
+Game -> UI: Send available moves
+UI -> Player: Display available moves
 
-Player -> Game: Select destination
-Game -> NewLoc: Move to selected location
-activate NewLoc
-NewLoc --> Game: Confirm arrival
-Game --> Player: Display new location description
+Player -> UI: Choose to move to a location
+UI -> Game: Send 'move_to' action with location
+Game -> World: move_to(location)
+World -> World: Update current_location
+World --> Game: Confirm move
+Game -> DB: Save updated game state
+DB --> Game: Confirm save
+Game -> UI: Send updated location info
+UI -> Player: Display new location info
 
-Player -> Game: Request to explore location
-Game -> NewLoc: Get location details
-NewLoc --> Game: Return detailed information
-Game --> Player: Display exploration results
-
-alt Discover new location
-    Game -> NewLoc: Check for undiscovered connections
-    NewLoc --> Game: Return new location
-    Game -> Game: Add new location to world map
-    Game --> Player: Notify of new location discovery
-else No new location
-    Game --> Player: Inform no new discoveries
-end
-
-Player -> Game: Request to use dragon for exploration
-Game -> Dragon: Use exploration ability
-Dragon --> Game: Return enhanced exploration results
-Game --> Player: Display enhanced exploration results
-
-deactivate NewLoc
-deactivate Game
 @enduml
