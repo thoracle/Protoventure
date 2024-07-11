@@ -72,6 +72,9 @@ class World:
             return True
         return False
 
+    def get_all_locations(self):
+        return list(self.locations.keys())
+        
     def get_current_location_info(self):
         location = self.locations[self.current_location]
         return f"You are in the {location['name']}. {location['description']}"
