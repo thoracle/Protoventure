@@ -18,6 +18,21 @@
             <button onclick="startGame()">Start New Game</button>
             <button onclick="loadGame()">Load Game</button>
         </div>
+        <div id="dragon-bonding" style="display: none;">
+            <h2>Bond with Your Dragon</h2>
+            <input type="text" id="dragon-name" placeholder="Dragon Name">
+            <select id="dragon-color">
+                <option value="red">Red</option>
+                <option value="blue">Blue</option>
+                <option value="green">Green</option>
+            </select>
+            <select id="dragon-breed">
+                <option value="fire">Fire Dragon</option>
+                <option value="ice">Ice Dragon</option>
+                <option value="storm">Storm Dragon</option>
+            </select>
+            <button onclick="bondWithDragon()">Bond with Dragon</button>
+        </div>
         <div id="game-play" style="display: none;">
             <div id="output"></div>
             <input type="text" id="input" placeholder="Enter your command">
@@ -39,9 +54,9 @@
             .then(response => response.json())
             .then(data => {
                 document.getElementById('start-game').style.display = 'none';
-                document.getElementById('game-play').style.display = 'block';
+                document.getElementById('dragon-bonding').style.display = 'block';
                 const output = document.getElementById('output');
-                output.innerHTML = `<p>Welcome, ${data.player.name} the ${data.player.character_class}! Your adventure begins.</p>`;
+                output.innerHTML = `<p>Welcome, ${data.player.name} the ${data.player.character_class}! It's time to bond with your dragon.</p>`;
             });
         }
 
@@ -59,6 +74,27 @@
                 document.getElementById('game-play').style.display = 'block';
                 const output = document.getElementById('output');
                 output.innerHTML = `<p>Welcome back, ${data.player.name}! Your adventure continues.</p>`;
+            });
+        }
+
+        function bondWithDragon() {
+            const dragonName = document.getElementById('dragon-name').value;
+            const dragonColor = document.getElementById('dragon-color').value;
+            const dragonBreed = document.getElementById('dragon-breed').value;
+            
+            fetch('/action', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({action: `bond_with_dragon:${dragonName}:${dragonColor}:${dragonBreed}`}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('dragon-bonding').style.display = 'none';
+                document.getElementById('game-play').style.display = 'block';
+                const output = document.getElementById('output');
+                output.innerHTML += `<p>${data.message}</p>`;
             });
         }
 
