@@ -1,38 +1,45 @@
-@startuml
+startuml
+title UC1: Create Character
+
 actor Player
 participant "Game System" as Game
-participant "Character" as Char
+participant "Player" as PlayerClass
+participant "World" as World
+participant "UI" as UI
+database "Database" as DB
 
-Player -> Game: Start new game
-activate Game
+Player -> UI: Access game
+UI -> Game: Initialize game
+Game -> Game: Load configuration
 
-Game -> Player: Request character name
-Player --> Game: Enter character name
+Player -> UI: Choose to start new game
+UI -> Game: Request character creation
 
-Game -> Char: Create new character
-activate Char
+Game -> UI: Display character creation options
+UI -> Player: Show name input and class selection
 
-Char --> Game: Character created
-Game --> Player: Display character creation confirmation
+Player -> UI: Enter name
+Player -> UI: Select character class
+UI -> Game: Send name and class
 
-Game -> Player: Request character class
-Player --> Game: Select character class
+Game -> PlayerClass: Create new Player(name, class)
+activate PlayerClass
+PlayerClass -> PlayerClass: Initialize attributes
+PlayerClass --> Game: Return new Player object
+deactivate PlayerClass
 
-Game -> Char: Set character class
-Char --> Game: Class set
+Game -> World: Create new World()
+activate World
+World -> World: Initialize starting location
+World --> Game: Return new World object
+deactivate World
 
-Game -> Player: Request initial stats distribution
-Player --> Game: Distribute initial stats
+Game -> Game: Set player and world
 
-Game -> Char: Set initial stats
-Char --> Game: Stats set
+Game -> DB: Save initial game state
+DB --> Game: Confirm save
 
-Game --> Player: Display character summary
-Player -> Game: Confirm character creation
+Game -> UI: Send initial game state
+UI -> Player: Display welcome message and initial game state
 
-Game -> Game: Save character data
-Game --> Player: Character creation complete
-
-deactivate Char
-deactivate Game
 @enduml
