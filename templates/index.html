@@ -37,10 +37,8 @@
             <div id="output"></div>
             <div id="location-info"></div>
             <div id="available-moves"></div>
-            <input type="text" id="input" placeholder="Enter your command">
-            <button onclick="sendCommand()">Send</button>
             <button onclick="look()">Look Around</button>
-            <button onclick="getAvailableMoves()">Get Available Moves</button>
+            <div id="move-buttons"></div>
         </div>
     </div>
 
@@ -104,18 +102,29 @@
             const output = document.getElementById('output');
             const locationInfo = document.getElementById('location-info');
             const availableMoves = document.getElementById('available-moves');
+            const moveButtons = document.getElementById('move-buttons');
 
             output.innerHTML += `<p>${data.message}</p>`;
             locationInfo.innerHTML = `<p>${data.game_state.current_location}</p>`;
-            availableMoves.innerHTML = `<p>Available moves: ${data.game_state.available_moves.join(', ')}</p>`;
+            
+            // Clear previous move buttons
+            moveButtons.innerHTML = '';
+            
+            // Create a button for each available move
+            data.game_state.available_moves.forEach(move => {
+                const button = document.createElement('button');
+                button.textContent = `Move to ${move}`;
+                button.onclick = function() { moveToLocation(move); };
+                moveButtons.appendChild(button);
+            });
         }
 
         function look() {
             sendAction('look');
         }
 
-        function getAvailableMoves() {
-            sendAction('get_moves');
+        function moveToLocation(location) {
+            sendAction(`move_to:${location}`);
         }
 
         function sendAction(action) {
@@ -130,18 +139,6 @@
             .then(data => {
                 updateGameState(data);
             });
-        }
-
-        function sendCommand() {
-            const input = document.getElementById('input');
-            const command = input.value;
-            input.value = '';
-
-            if (command.startsWith('move_to')) {
-                sendAction(command);
-            } else {
-                sendAction(command);
-            }
         }
     </script>
 </body>
