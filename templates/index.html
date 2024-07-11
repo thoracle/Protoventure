@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,6 +52,7 @@
         function startGame() {
             const playerName = document.getElementById('player-name').value;
             const characterClass = document.getElementById('character-class').value;
+            console.log("Starting new game with:", playerName, characterClass);
             fetch('/start', {
                 method: 'POST',
                 headers: {
@@ -60,12 +60,22 @@
                 },
                 body: JSON.stringify({player_name: playerName, character_class: characterClass}),
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log("Game started successfully:", data);
                 document.getElementById('start-game').style.display = 'none';
                 document.getElementById('dragon-bonding').style.display = 'block';
                 const output = document.getElementById('output');
                 output.innerHTML = `<p>Welcome, ${data.player.name} the ${data.player.character_class}! It's time to bond with your dragon.</p>`;
+            })
+            .catch(error => {
+                console.error('Error starting game:', error);
+                alert('Failed to start game. Check console for details.');
             });
         }
 
@@ -82,6 +92,10 @@
                 document.getElementById('start-game').style.display = 'none';
                 document.getElementById('game-play').style.display = 'block';
                 updateGameState(data);
+            })
+            .catch(error => {
+                console.error('Error loading game:', error);
+                alert('Failed to load game. Check console for details.');
             });
         }
 
@@ -93,4 +107,127 @@
             fetch('/action', {
                 method: 'POST',
                 headers: {
-                    '
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({action: `bond_with_dragon:${dragonName}:${dragonColor}:${dragonBreed}`}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('dragon-bonding').style.display = 'none';
+                document.getElementById('game-play').style.display = 'block';
+                updateGameState(data);
+            })
+            .catch(error => {
+                console.error('Error bonding with dragon:', error);
+                alert('Failed to bond with dragon. Check console for details.');
+            });
+        }
+
+        function updateGameState(data) {
+            const output = document.getElementById('output');
+            const locationInfo = document.getElementById('location-info');
+            const moveButtons = document.getElementById('move-buttons');
+            const flyButtons = document.getElementById('fly-buttons');
+            const mountButton = document.getElementById('mount-button');
+            const dismountButton = document.getElementById('dismount-button');
+            const inventoryDiv = document.getElementById('inventory');
+
+            output.innerHTML += `<p>${data.message}</p>`;
+            locationInfo.innerHTML = `<p>${data.game_state.current_location}</p>`;
+            
+            // Clear previous move and fly buttons
+            moveButtons.innerHTML = '';
+            flyButtons.innerHTML = '';
+            
+            const isDragonMounted = data.game_state.player.dragon && data.game_state.player.dragon.is_ridden;
+
+            if (isDragonMounted) {
+                moveButtons.style.display = 'none';
+                flyButtons.style.display = 'block';
+                mountButton.style.display = 'none';
+                dismountButton.style.display = 'inline-block';
+
+                data.game_state.all_locations.forEach(location => {
+                    const button = document.createElement('button');
+                    button.textContent = `Fly to ${location}`;
+                    button.onclick = function() { flyToLocation(location); };
+                    flyButtons.appendChild(button);
+                });
+            } else {
+                moveButtons.style.display = 'block';
+                flyButtons.style.display = 'none';
+                mountButton.style.display = 'inline-block';
+                dismountButton.style.display = 'none';
+
+                data.game_state.available_moves.forEach(move => {
+                    const button = document.createElement('button');
+                    button.textContent = `Move to ${move}`;
+                    button.onclick = function() { moveToLocation(move); };
+                    moveButtons.appendChild(button);
+                });
+            }
+
+            // Update inventory display
+            inventoryDiv.innerHTML = '';
+            if (data.game_state.player.inventory) {
+                data.game_state.player.inventory.forEach(item => {
+                    const itemButton = document.createElement('button');
+                    itemButton.textContent = `Use ${item.name}`;
+                    itemButton.onclick = function() { useItem(item.name); };
+                    inventoryDiv.appendChild(itemButton);
+                });
+            }
+        }
+
+        function look() {
+            sendAction('look');
+        }
+
+        function getStatus() {
+            sendAction('status');
+        }
+
+        function mountDragon() {
+            sendAction('mount_dragon');
+        }
+
+        function dismountDragon() {
+            sendAction('dismount_dragon');
+        }
+
+        function moveToLocation(location) {
+            sendAction(`move_to:${location}`);
+        }
+
+        function flyToLocation(location) {
+            sendAction(`fly_to:${location}`);
+        }
+
+        function viewInventory() {
+            sendAction('view_inventory');
+        }
+
+        function useItem(itemName) {
+            sendAction(`use_item:${itemName}`);
+        }
+
+        function sendAction(action) {
+            fetch('/action', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({action: action}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                updateGameState(data);
+            })
+            .catch(error => {
+                console.error('Error sending action:', error);
+                alert('Failed to perform action. Check console for details.');
+            });
+        }
+    </script>
+</body>
+</html>
