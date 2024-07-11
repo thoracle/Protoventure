@@ -138,10 +138,20 @@ class Game:
             return f"Unknown action: {action}"
 
     def get_game_state(self):
-        return {
-            "player": self.player.to_dict(),
-            "world": self.world.to_dict(),
-            "current_location": self.world.get_current_location_info(),
-            "available_moves": self.world.get_available_moves(),
-            "all_locations": self.world.get_all_locations()
-        }
+    return {
+        "player": {
+            "name": self.player.name,
+            "health": self.player.health,
+            "attack": self.player.attack,
+            "defense": self.player.defense,
+            "dragon": {
+                "name": self.player.dragon.name if self.player.dragon else None,
+                "is_ridden": self.player.dragon.is_ridden if self.player.dragon else False,
+                "energy": self.player.dragon.energy if self.player.dragon else 0
+            } if self.player.dragon else None
+        },
+        "world": self.world.to_dict(),
+        "current_location": self.world.get_current_location_info(),
+        "available_moves": self.world.get_available_moves(),
+        "all_locations": self.world.get_all_locations()
+    }
