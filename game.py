@@ -13,8 +13,8 @@ class Game:
         with open('config.json', 'r') as config_file:
             self.config = json.load(config_file)
 
-    def start_new_game(self, player_name):
-        self.player = Player(player_name)
+    def start_new_game(self, player_name, character_class):
+        self.player = Player(player_name, character_class)
         self.world = World()
         self.save_game()
 
