@@ -1,39 +1,40 @@
 @startuml
+title UC2: Bond with Dragon
+
 actor Player
 participant "Game System" as Game
-participant "Character" as Char
-participant "Dragon" as Dragon
+participant "Player" as PlayerClass
+participant "Dragon" as DragonClass
+participant "UI" as UI
+database "Database" as DB
 
-Player -> Game: Initiate dragon bonding
-activate Game
+Player -> UI: Access dragon bonding interface
+UI -> Game: Request dragon bonding options
 
-Game -> Player: Present available dragons
-Player --> Game: Select dragon
+Game -> UI: Display dragon bonding options
+UI -> Player: Show dragon name input, color and breed selection
 
-Game -> Dragon: Create new dragon
-activate Dragon
+Player -> UI: Enter dragon name
+Player -> UI: Select dragon color
+Player -> UI: Select dragon breed
+UI -> Game: Send dragon details
 
-Dragon --> Game: Dragon created
-Game --> Player: Display dragon information
+Game -> DragonClass: Create new Dragon(name, color, breed)
+activate DragonClass
+DragonClass -> DragonClass: Initialize attributes
+DragonClass --> Game: Return new Dragon object
+deactivate DragonClass
 
-Game -> Player: Confirm dragon selection
-Player --> Game: Confirm selection
+Game -> PlayerClass: bond_with_dragon(dragon)
+activate PlayerClass
+PlayerClass -> PlayerClass: Set dragon attribute
+PlayerClass --> Game: Confirm bond
+deactivate PlayerClass
 
-Game -> Char: Assign dragon to character
-Char --> Game: Dragon assigned
+Game -> DB: Save updated game state
+DB --> Game: Confirm save
 
-Game -> Dragon: Bond with character
-Dragon --> Game: Bonding complete
+Game -> UI: Send updated game state
+UI -> Player: Display bond confirmation and updated game state
 
-Game -> Player: Prompt for dragon name
-Player --> Game: Enter dragon name
-
-Game -> Dragon: Set dragon name
-Dragon --> Game: Name set
-
-Game -> Game: Save dragon data
-Game --> Player: Display bonding completion message
-
-deactivate Dragon
-deactivate Game
 @enduml
