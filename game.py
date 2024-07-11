@@ -3,6 +3,7 @@ import sqlite3
 from player import Player
 from world import World
 from dragon import Dragon
+import random
 
 class Game:
     def __init__(self):
@@ -46,22 +47,50 @@ class Game:
         self.save_game()
         return f"{self.player.name} has bonded with {dragon.name} the {dragon.color} {dragon.breed} dragon!"
 
+    def initiate_combat(self, enemy):
+        combat_log = [f"You encounter a {enemy.name}!"]
+        while not self.player.is_defeated() and not enemy.is_defeated():
+            # Player's turn
+            damage = self.player.attack_enemy()
+            actual_damage = enemy.take_damage(damage)
+            combat_log.append(f"You deal {actual_damage} damage to the {enemy.name}.")
+            
+            if enemy.is_defeated():
+                combat_log.append(f"You have defeated the {enemy.name}!")
+                self.world.remove_enemy(enemy)
+                break
+            
+            # Enemy's turn
+            damage = enemy.attack_player()
+            actual_damage = self.player.take_damage(damage)
+            combat_log.append(f"The {enemy.name} deals {actual_damage} damage to you.")
+            
+            if self.player.is_defeated():
+                combat_log.append("You have been defeated!")
+                break
+        
+        self.save_game()
+        return "\n".join(combat_log)
+
     def process_action(self, action):
-        if action.startswith("bond_with_dragon"):
-            _, name, color, breed = action.split(":")
-            return self.bond_with_dragon(name, color, breed)
-        elif action == "look":
+        if action == "look":
             return self.world.get_current_location_info()
         elif action.startswith("move_to"):
             _, location = action.split(":")
             if self.world.move_to(location):
                 self.save_game()
-                return f"You have moved to {self.world.locations[location]['name']}. {self.world.locations[location]['description']}"
+                enemies = self.world.get_current_enemies()
+                if enemies:
+                    return self.initiate_combat(random.choice(enemies))
+                else:
+                    return f"You have moved to {self.world.locations[location]['name']}. {self.world.locations[location]['description']}"
             else:
                 return "You can't move there from your current location."
-        elif action == "get_moves":
-            moves = self.world.get_available_moves()
-            return f"You can move to: {', '.join(moves)}"
+        elif action == "status":
+            return f"Health: {self.player.health}, Attack: {self.player.attack}, Defense: {self.player.defense}"
+        elif action.startswith("bond_with_dragon"):
+            _, name, color, breed = action.split(":")
+            return self.bond_with_dragon(name, color, breed)
         else:
             return f"Unknown action: {action}"
 
