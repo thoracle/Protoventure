@@ -22,7 +22,71 @@ class Player:
         self.defense = 5
         self.speed = 10
 
-    # ... (other methods remain the same)
+    def take_damage(self, damage):
+        actual_damage = max(damage - self.defense, 0)
+        self.health -= actual_damage
+        return actual_damage
+
+    def is_defeated(self):
+        return self.health <= 0
+
+    def attack_enemy(self):
+        roll = random.randint(1, 20)
+        if roll == 20:
+            return ("critical", self.attack * 2)
+        elif roll == 1:
+            return ("miss", 0)
+        else:
+            return ("normal", self.attack)
+
+    def special_ability(self):
+        if self.character_class == "warrior":
+            return ("power_strike", self.attack * 1.5)
+        elif self.character_class == "mage":
+            return ("fireball", self.intelligence * 2)
+        elif self.character_class == "rogue":
+            return ("backstab", self.dexterity * 1.5)
+
+    def gain_experience(self, amount):
+        self.experience += amount
+        if self.experience >= 100 * self.level:
+            self.level_up()
+
+    def level_up(self):
+        self.level += 1
+        self.max_health += 10
+        self.health = self.max_health
+        self.max_mana += 5
+        self.mana = self.max_mana
+        self.strength += 2
+        self.dexterity += 2
+        self.intelligence += 2
+        self.attack += 2
+        self.defense += 1
+        self.speed += 1
+        self.experience -= 100 * (self.level - 1)
+
+    def bond_with_dragon(self, dragon):
+        self.dragon = dragon
+
+    def add_item(self, item):
+        if len(self.inventory) < self.max_inventory_size:
+            self.inventory.append(item)
+            return True
+        return False
+
+    def remove_item(self, item_name):
+        for item in self.inventory:
+            if item.name == item_name:
+                self.inventory.remove(item)
+                return item
+        return None
+
+    def use_item(self, item_name):
+        item = self.remove_item(item_name)
+        if item:
+            return item.use(self)
+        return "You don't have that item."
 
     def to_dict(self):
         return {
