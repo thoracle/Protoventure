@@ -38,6 +38,7 @@
             <div id="location-info"></div>
             <div id="available-moves"></div>
             <button onclick="look()">Look Around</button>
+            <button onclick="getStatus()">Check Status</button>
             <div id="move-buttons"></div>
         </div>
     </div>
@@ -101,7 +102,6 @@
         function updateGameState(data) {
             const output = document.getElementById('output');
             const locationInfo = document.getElementById('location-info');
-            const availableMoves = document.getElementById('available-moves');
             const moveButtons = document.getElementById('move-buttons');
 
             output.innerHTML += `<p>${data.message}</p>`;
@@ -121,6 +121,10 @@
 
         function look() {
             sendAction('look');
+        }
+
+        function getStatus() {
+            sendAction('status');
         }
 
         function moveToLocation(location) {
