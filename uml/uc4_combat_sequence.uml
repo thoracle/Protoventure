@@ -1,0 +1,36 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "World" as World
+participant "Player" as PlayerObj
+participant "Enemy" as EnemyObj
+
+Player -> Game: Move to location
+Game -> World: move_to(location)
+World --> Game: Return enemies (if any)
+alt Enemies present
+    Game -> Game: initiate_combat(enemy)
+    loop until player or enemy defeated
+        Game -> PlayerObj: attack_enemy()
+        PlayerObj --> Game: Return damage
+        Game -> EnemyObj: take_damage(damage)
+        EnemyObj --> Game: Return actual damage
+        alt Enemy defeated
+            Game -> World: remove_enemy(enemy)
+            Game --> Player: Display victory message
+        else Enemy not defeated
+            Game -> EnemyObj: attack_player()
+            EnemyObj --> Game: Return damage
+            Game -> PlayerObj: take_damage(damage)
+            PlayerObj --> Game: Return actual damage
+            alt Player defeated
+                Game --> Player: Display defeat message
+            end
+        end
+    end
+    Game -> Game: save_game()
+    Game --> Player: Display combat results
+else No enemies
+    Game --> Player: Display new location info
+end
+@enduml
