@@ -1,0 +1,94 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class Game {
+  -player: Player
+  -world: World
+  -config: Dict
+  +__init__()
+  +load_config()
+  +start_new_game(player_name: str, character_class: str)
+  +load_game()
+  +save_game()
+  +bond_with_dragon(dragon_name: str, dragon_color: str, dragon_breed: str): str
+  +initiate_combat(enemy: Enemy): str
+  +process_action(action: str): str
+  +get_game_state(): Dict
+}
+
+class Player {
+  +name: str
+  +character_class: str
+  +level: int
+  +experience: int
+  +health: int
+  +mana: int
+  +strength: int
+  +dexterity: int
+  +intelligence: int
+  +inventory: List[Item]
+  +dragon: Dragon
+  +attack: int
+  +defense: int
+  +__init__(name: str, character_class: str)
+  +bond_with_dragon(dragon: Dragon)
+  +take_damage(damage: int): int
+  +is_defeated(): bool
+  +attack_enemy(): int
+  +to_dict(): Dict
+  +from_dict(data: Dict): Player
+}
+
+class Dragon {
+  +name: str
+  +color: str
+  +breed: str
+  +level: int
+  +health: int
+  +energy: int
+  +bond_level: int
+  +abilities: List[str]
+  +__init__(name: str, color: str, breed: str)
+  +to_dict(): Dict
+  +from_dict(data: Dict): Dragon
+}
+
+class World {
+  -locations: Dict[str, Dict]
+  -current_location: str
+  +__init__()
+  +move_to(location: str): bool
+  +get_current_location_info(): str
+  +get_available_moves(): List[str]
+  +get_current_enemies(): List[Enemy]
+  +remove_enemy(enemy: Enemy)
+  +to_dict(): Dict
+  +from_dict(data: Dict): World
+}
+
+class Enemy {
+  +name: str
+  +health: int
+  +attack: int
+  +defense: int
+  +__init__(name: str, health: int, attack: int, defense: int)
+  +take_damage(damage: int): int
+  +is_defeated(): bool
+  +attack_player(): int
+  +to_dict(): Dict
+}
+
+class Item {
+  +name: str
+  +description: str
+  +value: int
+  +__init__(name: str, description: str, value: int)
+  +use(player: Player)
+}
+
+Game "1" -- "1" Player
+Game "1" -- "1" World
+World "1" -- "*" Enemy
+Player "1" -- "1" Dragon
+Player "1" -- "*" Item
+@enduml
