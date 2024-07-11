@@ -2,6 +2,7 @@ import json
 import sqlite3
 from player import Player
 from world import World
+from dragon import Dragon
 
 class Game:
     def __init__(self):
@@ -39,15 +40,22 @@ class Game:
         conn.commit()
         conn.close()
 
+    def bond_with_dragon(self, dragon_name, dragon_color, dragon_breed):
+        dragon = Dragon(dragon_name, dragon_color, dragon_breed)
+        self.player.bond_with_dragon(dragon)
+        self.save_game()
+        return f"{self.player.name} has bonded with {dragon.name} the {dragon.color} {dragon.breed} dragon!"
+
     def process_action(self, action):
-        # Process the player's action and update the game state
-        # This is where we'll implement the main game logic
+        if action.startswith("bond_with_dragon"):
+            _, name, color, breed = action.split(":")
+            return self.bond_with_dragon(name, color, breed)
+        # Handle other actions here
         result = f"Processed action: {action}"
         self.save_game()
-        return {"message": result, "game_state": self.get_game_state()}
+        return result
 
     def get_game_state(self):
-        # Return a dictionary representing the current game state
         return {
             "player": self.player.to_dict(),
             "world": self.world.to_dict()
