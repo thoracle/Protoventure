@@ -6,6 +6,7 @@ from dragon import Dragon
 from enemy import Enemy
 from item import Item
 from npc_manager import NPCManager
+from quest import Quest
 import random
 
 class Game:
@@ -17,6 +18,45 @@ class Game:
         self.current_enemy = None
         self.npc_manager = NPCManager()
         self.combat_log = []
+        self.factions = {
+            "Dragonriders": Faction("Dragonriders", "An elite group of dragon tamers and riders."),
+            "Merchants Guild": Faction("Merchants Guild", "A powerful organization controlling trade in the realm."),
+            "Mages Association": Faction("Mages Association", "A secretive group of magic practitioners.")
+        }
+        self.quests = []
+        self.active_quest = None
+
+    def add_quest(self, quest):
+        self.quests.append(quest)
+
+    def start_quest(self, quest_title):
+        for quest in self.quests:
+            if quest.title == quest_title and not quest.completed:
+                self.active_quest = quest
+                return f"Started quest: {quest.title}\n{quest.description}"
+        return "Quest not found or already completed."
+
+    def complete_quest(self):
+        if self.active_quest:
+            self.active_quest.complete()
+            self.adjust_faction_reputation(self.active_quest.faction, self.active_quest.reward_reputation)
+            result = f"Completed quest: {self.active_quest.title}\n"
+            result += f"Gained {self.active_quest.reward_reputation} reputation with {self.active_quest.faction}"
+            self.active_quest = None
+            return result
+        return "No active quest to complete."
+
+    def get_faction_status(self, faction_name):
+        if faction_name in self.factions:
+            faction = self.factions[faction_name]
+            return f"{faction.name}: {faction.get_standing()} (Reputation: {faction.reputation})"
+        return f"Unknown faction: {faction_name}"
+
+    def adjust_faction_reputation(self, faction_name, amount):
+        if faction_name in self.factions:
+            self.factions[faction_name].adjust_reputation(amount)
+            return f"Your reputation with {faction_name} has changed. {self.get_faction_status(faction_name)}"
+        return f"Unknown faction: {faction_name}"
 
     def load_config(self):
         with open('config.json', 'r') as config_file:
@@ -30,7 +70,9 @@ class Game:
         self.player.add_item(Item("Health Potion", "Restores 20 health", "healing", 20))
         self.player.add_item(Item("Sword", "A basic sword", "weapon", 5))
         self.player.add_item(Item("Leather Armor", "Basic armor", "armor", 3))
-        
+        self.add_quest(Quest("Dragon Egg Retrieval", "Retrieve a dragon egg for the Dragonriders.", "Dragonriders", ["Retrieve dragon egg"], 20))
+        self.add_quest(Quest("Magical Artifact Trade", "Secure a trade deal for a magical artifact.", "Merchants Guild", ["Negotiate trade deal"], 15))
+        self.add_quest(Quest("Ancient Spell Recovery", "Recover an ancient spell for the Mages Association.", "Mages Association", ["Find ancient spell"], 25))
         self.save_game()
 
     def load_game(self):
@@ -186,6 +228,18 @@ class Game:
         elif action.startswith("talk_to:"):
             _, npc_name = action.split(":")
             return self.talk_to_npc(npc_name)
+        elif action == "view_factions":
+            return "\n".join([self.get_faction_status(faction) for faction in self.factions])
+        elif action.startswith("adjust_faction:"):
+            _, faction_name, amount = action.split(":")
+            return self.adjust_faction_reputation(faction_name, int(amount))
+        elif action == "view_quests":
+            return "\n".join([f"{'[Active] ' if quest == self.active_quest else ''}{quest.title} - {quest.faction}" for quest in self.quests if not quest.completed])
+        elif action.startswith("start_quest:"):
+            _, quest_title = action.split(":", 1)
+            return self.start_quest(quest_title)
+        elif action == "complete_quest":
+            return self.complete_quest()
         else:
             return f"Unknown action: {action}"
 
@@ -237,3 +291,21 @@ class Game:
             return "Your inventory is empty."
         inventory_list = [f"{item.name}: {item.description}" for item in self.player.inventory]
         return "Inventory:\n" + "\n".join(inventory_list)
+
+    def to_dict(self):
+        return {
+            # ... (other game state data)
+            "factions": {name: faction.to_dict() for name, faction in self.factions.items()},
+            "quests": [quest.to_dict() for quest in self.quests],
+            "active_quest": self.active_quest.to_dict() if self.active_quest else None
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        game = cls()
+        # ... (other game state loading)
+        game.factions = {name: Faction.from_dict(faction_data) for name, faction_data in data['factions'].items()}
+        game.quests = [Quest.from_dict(quest_data) for quest_data in data['quests']]
+        if data['active_quest']:
+            game.active_quest = next((quest for quest in game.quests if quest.title == data['active_quest']['title']), None)
+        return game
