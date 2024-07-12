@@ -37,22 +37,24 @@
             <div id="output"></div>
             <div id="location-info"></div>
             <div id="available-moves"></div>
-            <button onclick="look()">Look Around</button>
-            <button onclick="getStatus()">Check Status</button>
-            <button id="mount-button" onclick="mountDragon()">Mount Dragon</button>
-            <button id="dismount-button" onclick="dismountDragon()" style="display: none;">Dismount Dragon</button>
-            <button onclick="viewInventory()">View Inventory</button>
-            <div id="move-buttons"></div>
-            <div id="fly-buttons"></div>
-            <div id="inventory"></div>
-            <div id="npcs"></div>
-        </div>
-        <div id="combat" style="display: none;">
-            <h2>Combat</h2>
-            <div id="combat-log"></div>
-            <button onclick="playerAttack()">Attack</button>
-            <button onclick="playerSpecialAbility()">Special Ability</button>
-            <button onclick="playerUseItem()">Use Item</button>
+            <div id="non-combat-controls">
+                <button onclick="look()">Look Around</button>
+                <button onclick="getStatus()">Check Status</button>
+                <button id="mount-button" onclick="mountDragon()">Mount Dragon</button>
+                <button id="dismount-button" onclick="dismountDragon()" style="display: none;">Dismount Dragon</button>
+                <button onclick="viewInventory()">View Inventory</button>
+                <div id="move-buttons"></div>
+                <div id="fly-buttons"></div>
+                <div id="inventory"></div>
+                <div id="npcs"></div>
+            </div>
+            <div id="combat-controls" style="display: none;">
+                <h2>Combat</h2>
+                <div id="combat-log"></div>
+                <button onclick="playerAttack()">Attack</button>
+                <button onclick="playerSpecialAbility()">Special Ability</button>
+                <button onclick="playerUseItem()">Use Item</button>
+            </div>
         </div>
     </div>
 
@@ -139,73 +141,75 @@
             const mountButton = document.getElementById('mount-button');
             const dismountButton = document.getElementById('dismount-button');
             const inventoryDiv = document.getElementById('inventory');
-            const combatDiv = document.getElementById('combat');
-            const combatLog = document.getElementById('combat-log');
             const npcsDiv = document.getElementById('npcs');
+            const nonCombatControls = document.getElementById('non-combat-controls');
+            const combatControls = document.getElementById('combat-controls');
 
             output.innerHTML += `<p>${data.message}</p>`;
             locationInfo.innerHTML = `<p>${data.game_state.current_location}</p>`;
-            
-            // Clear previous move and fly buttons
-            moveButtons.innerHTML = '';
-            flyButtons.innerHTML = '';
-            
-            const isDragonMounted = data.game_state.player.dragon && data.game_state.player.dragon.is_ridden;
 
-            if (isDragonMounted) {
-                moveButtons.style.display = 'none';
-                flyButtons.style.display = 'block';
-                mountButton.style.display = 'none';
-                dismountButton.style.display = 'inline-block';
-
-                data.game_state.all_locations.forEach(location => {
-                    const button = document.createElement('button');
-                    button.textContent = `Fly to ${location}`;
-                    button.onclick = function() { flyToLocation(location); };
-                    flyButtons.appendChild(button);
-                });
-            } else {
-                moveButtons.style.display = 'block';
-                flyButtons.style.display = 'none';
-                mountButton.style.display = 'inline-block';
-                dismountButton.style.display = 'none';
-
-                data.game_state.available_moves.forEach(move => {
-                    const button = document.createElement('button');
-                    button.textContent = `Move to ${move}`;
-                    button.onclick = function() { moveToLocation(move); };
-                    moveButtons.appendChild(button);
-                });
-            }
-
-            // Update inventory display
-            inventoryDiv.innerHTML = '';
-            if (data.game_state.player.inventory) {
-                data.game_state.player.inventory.forEach(item => {
-                    const itemButton = document.createElement('button');
-                    itemButton.textContent = `Use ${item.name}`;
-                    itemButton.onclick = function() { useItem(item.name); };
-                    inventoryDiv.appendChild(itemButton);
-                });
-            }
-
-            // Show combat interface if in combat
             if (data.game_state.in_combat) {
-                combatDiv.style.display = 'block';
-                combatLog.innerHTML = data.combat_log || '';
+                nonCombatControls.style.display = 'none';
+                combatControls.style.display = 'block';
+                const combatLog = document.getElementById('combat-log');
+                combatLog.innerHTML = data.game_state.combat_log || '';
             } else {
-                combatDiv.style.display = 'none';
-            }
+                nonCombatControls.style.display = 'block';
+                combatControls.style.display = 'none';
 
-            // Update NPC display
-            npcsDiv.innerHTML = '';
-            if (data.game_state.npcs) {
-                data.game_state.npcs.forEach(npc => {
-                    const npcButton = document.createElement('button');
-                    npcButton.textContent = `Talk to ${npc.name}`;
-                    npcButton.onclick = function() { talkToNPC(npc.name); };
-                    npcsDiv.appendChild(npcButton);
-                });
+                // Clear previous move and fly buttons
+                moveButtons.innerHTML = '';
+                flyButtons.innerHTML = '';
+                
+                const isDragonMounted = data.game_state.player.dragon && data.game_state.player.dragon.is_ridden;
+
+                if (isDragonMounted) {
+                    moveButtons.style.display = 'none';
+                    flyButtons.style.display = 'block';
+                    mountButton.style.display = 'none';
+                    dismountButton.style.display = 'inline-block';
+
+                    data.game_state.all_locations.forEach(location => {
+                        const button = document.createElement('button');
+                        button.textContent = `Fly to ${location}`;
+                        button.onclick = function() { flyToLocation(location); };
+                        flyButtons.appendChild(button);
+                    });
+                } else {
+                    moveButtons.style.display = 'block';
+                    flyButtons.style.display = 'none';
+                    mountButton.style.display = 'inline-block';
+                    dismountButton.style.display = 'none';
+
+                    data.game_state.available_moves.forEach(move => {
+                        const button = document.createElement('button');
+                        button.textContent = `Move to ${move}`;
+                        button.onclick = function() { moveToLocation(move); };
+                        moveButtons.appendChild(button);
+                    });
+                }
+
+                // Update inventory display
+                inventoryDiv.innerHTML = '';
+                if (data.game_state.player.inventory) {
+                    data.game_state.player.inventory.forEach(item => {
+                        const itemButton = document.createElement('button');
+                        itemButton.textContent = `Use ${item.name}`;
+                        itemButton.onclick = function() { useItem(item.name); };
+                        inventoryDiv.appendChild(itemButton);
+                    });
+                }
+
+                // Update NPC display
+                npcsDiv.innerHTML = '';
+                if (data.game_state.npcs) {
+                    data.game_state.npcs.forEach(npc => {
+                        const npcButton = document.createElement('button');
+                        npcButton.textContent = `Talk to ${npc.name}`;
+                        npcButton.onclick = function() { talkToNPC(npc.name); };
+                        npcsDiv.appendChild(npcButton);
+                    });
+                }
             }
         }
 
