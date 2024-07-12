@@ -5,6 +5,7 @@ from world import World
 from dragon import Dragon
 from enemy import Enemy
 from item import Item
+from npc_manager import NPCManager
 import random
 
 class Game:
@@ -14,6 +15,7 @@ class Game:
         self.load_config()
         self.in_combat = False
         self.current_enemy = None
+        self.npc_manager = NPCManager()
 
     def load_config(self):
         with open('config.json', 'r') as config_file:
@@ -132,6 +134,13 @@ class Game:
         self.save_game()
         return result
 
+    def talk_to_npc(self, npc_name):
+        npcs = self.world.get_npcs_at_current_location()
+        npc = next((npc for npc in npcs if npc.name.lower() == npc_name.lower()), None)
+        if npc:
+            return f"{npc.name}: {npc.get_dialogue('greeting')}"
+        return f"There is no NPC named {npc_name} here."
+
     def process_action(self, action):
         if self.in_combat:
             if action in ["attack", "special_ability", "use_item"]:
@@ -174,6 +183,9 @@ class Game:
         elif action.startswith("use_item:"):
             _, item_name = action.split(":")
             return self.use_item(item_name)
+        elif action.startswith("talk_to:"):
+            _, npc_name = action.split(":")
+            return self.talk_to_npc(npc_name)
         else:
             return f"Unknown action: {action}"
 
@@ -185,7 +197,8 @@ class Game:
             "available_moves": self.world.get_available_moves(),
             "all_locations": self.world.get_all_locations(),
             "in_combat": self.in_combat,
-            "current_enemy": self.current_enemy.to_dict() if self.current_enemy else None
+            "current_enemy": self.current_enemy.to_dict() if self.current_enemy else None,
+            "npcs": [npc.to_dict() for npc in self.world.get_npcs_at_current_location()]
         }
 
     def mount_dragon(self):
