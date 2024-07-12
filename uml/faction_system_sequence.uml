@@ -1,0 +1,36 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Faction Manager" as FactionMgr
+participant "Faction" as Faction
+participant "Quest Manager" as QuestMgr
+participant "UI" as UI
+
+Player -> Game: Interact with faction
+Game -> FactionMgr: Get faction status
+FactionMgr -> Faction: Get player standing
+Faction --> FactionMgr: Return current standing
+FactionMgr --> Game: Return faction status
+Game -> UI: Display faction status
+UI --> Player: Show faction options
+
+Player -> Game: Choose faction action
+alt Complete faction quest
+    Game -> QuestMgr: Complete faction quest
+    QuestMgr -> FactionMgr: Update faction standing
+    FactionMgr -> Faction: Increase standing
+    Faction -> Faction: Recalculate player benefits
+else Perform faction-specific action
+    Game -> FactionMgr: Process faction action
+    FactionMgr -> Faction: Update based on action
+    Faction -> Faction: Adjust internal state
+end
+
+FactionMgr -> Game: Return updated faction state
+Game -> UI: Display faction update
+UI --> Player: Show new faction status
+
+FactionMgr -> FactionMgr: Update inter-faction relations
+FactionMgr -> World: Apply faction influence changes
+World -> World: Update world state based on faction influence
+@enduml
