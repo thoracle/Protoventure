@@ -50,7 +50,7 @@
             </div>
             <div id="combat-controls" style="display: none;">
                 <h2>Combat</h2>
-                <div id="combat-log"></div>
+                <div id="combat-log" style="white-space: pre-wrap;"></div>
                 <button onclick="playerAttack()">Attack</button>
                 <button onclick="playerSpecialAbility()">Special Ability</button>
                 <button onclick="playerUseItem()">Use Item</button>
@@ -152,7 +152,7 @@
                 nonCombatControls.style.display = 'none';
                 combatControls.style.display = 'block';
                 const combatLog = document.getElementById('combat-log');
-                combatLog.innerHTML = data.game_state.combat_log || '';
+                combatLog.textContent = data.game_state.combat_log || '';
             } else {
                 nonCombatControls.style.display = 'block';
                 combatControls.style.display = 'none';
