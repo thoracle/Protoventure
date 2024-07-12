@@ -1,0 +1,42 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "Quest Manager" as QuestMgr
+participant "NPC" as NPC
+participant "World" as World
+participant "UI" as UI
+
+Player -> Game: Request available quests
+Game -> QuestMgr: Get available quests
+QuestMgr -> NPC: Get NPC quests
+NPC --> QuestMgr: Return available quests
+QuestMgr -> World: Check world state for quests
+World --> QuestMgr: Return world-state quests
+QuestMgr --> Game: Return all available quests
+Game -> UI: Display available quests
+UI --> Player: Show quest options
+
+Player -> Game: Accept quest
+Game -> QuestMgr: Assign quest to player
+QuestMgr -> QuestMgr: Update quest status
+
+loop Until quest completed
+    Player -> Game: Perform quest-related action
+    Game -> QuestMgr: Update quest progress
+    QuestMgr -> QuestMgr: Check quest objectives
+    alt Quest completed
+        QuestMgr -> Game: Notify quest completion
+        Game -> UI: Display completion message
+        UI --> Player: Show quest rewards
+        Game -> QuestMgr: Award quest rewards
+        QuestMgr -> Player: Update player state
+    else Quest not completed
+        QuestMgr -> Game: Return updated progress
+        Game -> UI: Display progress update
+        UI --> Player: Show quest progress
+    end
+end
+
+QuestMgr -> World: Update world state
+World -> World: Apply quest consequences
+@enduml
