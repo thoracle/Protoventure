@@ -6,6 +6,7 @@ from dragon import Dragon
 from enemy import Enemy
 from item import Item
 from npc_manager import NPCManager
+from faction import Faction
 from quest import Quest
 import random
 
