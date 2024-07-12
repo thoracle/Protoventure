@@ -1,0 +1,35 @@
+@startuml
+actor Player
+participant "Game System" as Game
+participant "NPC Manager" as NPCMgr
+participant "NPC" as NPC
+participant "Dialogue System" as DialogSys
+participant "UI" as UI
+
+Player -> Game: Approach NPC
+Game -> NPCMgr: Get NPC at location
+NPCMgr -> NPC: Get interaction options
+NPC --> NPCMgr: Return options
+NPCMgr --> Game: Return NPC and options
+Game -> UI: Display NPC and options
+UI --> Player: Show interaction choices
+
+Player -> Game: Choose interaction
+Game -> DialogSys: Initiate dialogue
+DialogSys -> NPC: Get dialogue tree
+NPC --> DialogSys: Return dialogue options
+
+loop Until dialogue ends
+    DialogSys -> UI: Display dialogue options
+    UI --> Player: Show dialogue choices
+    Player -> Game: Select dialogue option
+    Game -> DialogSys: Process choice
+    DialogSys -> NPC: Update NPC state
+    NPC --> DialogSys: Return response
+    DialogSys -> UI: Display NPC response
+    UI --> Player: Show NPC response
+end
+
+Game -> NPCMgr: Update NPC state
+NPCMgr -> NPC: Save updated state
+@enduml
