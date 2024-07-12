@@ -43,9 +43,6 @@
                 <button id="mount-button" onclick="mountDragon()">Mount Dragon</button>
                 <button id="dismount-button" onclick="dismountDragon()" style="display: none;">Dismount Dragon</button>
                 <button onclick="viewInventory()">View Inventory</button>
-                <button onclick="viewFactions()">View Factions</button>
-                <button onclick="viewQuests()">View Quests</button>
-                <button onclick="completeQuest()">Complete Active Quest</button>
                 <div id="move-buttons"></div>
                 <div id="fly-buttons"></div>
                 <div id="inventory"></div>
@@ -203,20 +200,6 @@
                     });
                 }
 
-                // Update quest display
-                const questsDiv = document.getElementById('quests');
-                questsDiv.innerHTML = '';
-                if (data.game_state.quests) {
-                    data.game_state.quests.forEach(quest => {
-                        if (!quest.completed) {
-                            const questButton = document.createElement('button');
-                            questButton.textContent = `Start Quest: ${quest.title}`;
-                            questButton.onclick = function() { startQuest(quest.title); };
-                            questsDiv.appendChild(questButton);
-                        }
-                    });
-                }
-    }
                 // Update NPC display
                 npcsDiv.innerHTML = '';
                 if (data.game_state.npcs) {
@@ -259,27 +242,7 @@
         function viewInventory() {
             sendAction('view_inventory');
         }
-        
-        function viewFactions() {
-            sendAction('view_factions');
-        }
 
-        // For testing purposes, you can add this function
-        function adjustFactionReputation(faction, amount) {
-            sendAction(`adjust_faction:${faction}:${amount}`);
-        }
-
-        function viewQuests() {
-            sendAction('view_quests');
-        }
-
-        function startQuest(questTitle) {
-            sendAction(`start_quest:${questTitle}`);
-        }
-
-        function completeQuest() {
-            sendAction('complete_quest');
-        }
         function useItem(itemName) {
             sendAction(`use_item:${itemName}`);
         }
