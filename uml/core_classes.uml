@@ -7,6 +7,8 @@ class Game {
   -config: Dict
   -in_combat: bool
   -current_enemy: Enemy
+  -npc_manager: NPCManager
+  -combat_log: List[str]
   +__init__()
   +load_config()
   +start_new_game(player_name: str, character_class: str)
@@ -17,13 +19,14 @@ class Game {
   +player_turn(action: str): str
   +enemy_turn(enemy: Enemy): List[str]
   +use_item_in_combat(): str
+  +use_item(item_name: str): str
+  +talk_to_npc(npc_name: str): str
+  +process_action(action: str): str
+  +get_game_state(): Dict
   +mount_dragon(): str
   +dismount_dragon(): str
   +fly_to_location(location: str): str
   +view_inventory(): str
-  +use_item(item_name: str): str
-  +process_action(action: str): str
-  +get_game_state(): Dict
 }
 
 class Player {
@@ -39,7 +42,6 @@ class Player {
   +dexterity: int
   +intelligence: int
   +inventory: List[Item]
-  +max_inventory_size: int
   +dragon: Dragon
   +attack: int
   +defense: int
@@ -87,6 +89,7 @@ class World {
   +get_current_enemies(): List[Enemy]
   +remove_enemy(enemy: Enemy)
   +get_all_locations(): List[str]
+  +get_npcs_at_current_location(): List[NPC]
   +to_dict(): Dict
   +from_dict(data: Dict): World
 }
@@ -117,9 +120,33 @@ class Item {
   +from_dict(data: Dict): Item
 }
 
+class NPC {
+  +name: str
+  +description: str
+  +dialogue: Dict[str, str]
+  +interaction_options: List[str]
+  +__init__(name: str, description: str)
+  +add_dialogue(key: str, text: str)
+  +add_interaction_option(option: str)
+  +get_interaction_options(): List[str]
+  +get_dialogue(key: str): str
+  +to_dict(): Dict
+  +from_dict(data: Dict): NPC
+}
+
+class NPCManager {
+  -npcs: Dict[str, List[NPC]]
+  +add_npc(location: str, npc: NPC)
+  +get_npcs_at_location(location: str): List[NPC]
+  +to_dict(): Dict
+  +from_dict(data: Dict): NPCManager
+}
+
 Game "1" -- "1" Player
 Game "1" -- "1" World
+Game "1" -- "1" NPCManager
 World "1" -- "*" Enemy
+World "1" -- "*" NPC
 Player "1" -- "1" Dragon
 Player "1" -- "*" Item
 @enduml
