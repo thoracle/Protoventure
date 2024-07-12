@@ -25,48 +25,97 @@ Here's a brief explanation of each class:
 7. Item: Objects the player can collect and use.
 
 > Let’s enumerate the core use cases for the game​​​​​​​​​​​​​​​​ formatted as “actor takes an action on target object” when possible​​​​​​​​​​​​​​​​.
- Here's the revised list of use cases formatted as "actor takes an action on target object" where applicable, with asterisks (*) marking the ones included in our use case UML diagram:
+a list of the main actions and interactions a player would expect in this high fantasy dragon riding adventure with a faction-based mission system.
 
-1. - Player creates character
-2. - Player bonds with dragon
-3. * Player explores world
-4. * Player rides dragon
-5. * Player engages in combat with enemies
-6. * Player manages inventory
-7. * Player crafts items
-8. * Player brews potions
-9. * Player interacts with factions
-10. * Player completes quests
-11. * Player develops skills
-12. * Player trades with NPCs/economy system
-13. * Player experiences weather effects
-14. * Player interacts with ecosystem
-15. * Player shapes story through choices
-16. * Player builds and modifies world
-17. * Player manages in-game time
-18. * Player customizes dragon
-19. * Player negotiates between factions
-20. * Player discovers new recipes
-21. * Player experiences dynamic events
-22. * Player engages in dialogue with NPCs
-23. * Player saves/loads game
-24. Player joins or creates guild
-25. Player participates in guild quests
-26. Player contributes to guild activities
-27. Player levels up guild
-28. Guild leader manages guild membership
-29. Player engages in PvP combat
-30. Player participates in dragon tournaments
-31. Player builds and customizes housing
-32. Player discovers and empowers magical artifacts
-33. Player participates in seasonal festivals
-34. Player breeds dragons
-35. Player manipulates weather (high-level ability)
-36. Player travels to alternate dimensions
-37. Player rebuilds and develops world areas
-38. Player forms alliances with NPCs
-39. Player manages personal reputation
-40. Player solves environmental puzzles
+1. Player Creation and Dragon Bonding
+   - Player creates a character
+   - Player bonds with a dragon
+
+2. World Exploration
+   - Player moves to a location
+   - Player explores a location
+   - Player discovers a new location
+
+3. Dragon Interaction
+   - Player rides the dragon
+   - Player trains the dragon
+   - Player commands dragon to use an ability
+
+4. Faction Interaction
+   - Player joins a faction
+   - Player completes a task for a faction
+   - Player views faction standings
+
+5. Mission System
+   - Player views available missions
+   - Player accepts a mission from a faction
+   - Player completes a mission
+   - Game awards player with mission rewards
+
+6. Inventory Management
+   - Player collects an item
+   - Player uses an item
+   - Player drops an item
+   - Player views inventory
+
+7. Combat System
+   - Player engages an enemy in combat
+   - Player attacks an enemy
+   - Player commands dragon to attack an enemy
+   - Player defeats an enemy
+
+8. Character Progression
+   - Player gains experience points
+   - Player levels up
+   - Player improves dragon's ability
+
+9. NPC Interaction
+   - Player talks to an NPC
+   - Player receives information from an NPC
+   - Player trades with an NPC
+
+10. Save/Load System
+    - Player saves the game
+    - Player loads a saved game
+
+11. Game State Management
+    - Player starts a new game
+    - Player quits the game
+    - Player views game statistics
+
+12. Fast Travel
+    - Player unlocks a fast travel point
+    - Player fast travels to a location
+
+13. Crafting System
+    - Player gathers a resource
+    - Player crafts an item
+
+14. Weather and Time System
+    - Game changes weather conditions
+    - Game updates time of day
+
+15. Dragon Customization
+    - Player changes dragon's appearance
+    - Player equips dragon with gear
+
+Advanced Use Cases:
+ - Player participates in guild quests
+ - Player contributes to guild activitis
+ - Player levels up guild
+ - Guild leader manages guild membership
+ - Player engages in PvP combat
+ - Player participates in dragon tournaments
+ - Player builds and customizes housing
+ - Player discovers and empowers magical artifacts
+ - Player participates in seasonal festivals
+ - Player breeds dragons
+ - Player manipulates weather (high-level ability)
+ - Player travels to alternate dimensions
+ - Player rebuilds and develops world areas
+ - Player forms alliances with NPCs
+ - Player manages personal reputation
+ - Player solves environmental puzzles
 
 This formatted list provides a clearer picture of the actor (usually the player) and the action they're taking, along with the target of that action when applicable. The asterisks indicate which use cases are currently represented in our UML use case diagram.​​​​​​​​​​​​​​​​
 
@@ -97,3 +146,32 @@ Use Case Diagram
 
 Class Diagram
 <img src="https://www.plantuml.com/plantuml/svg/bLLDJzmm4Btlhx0uXLAazfeJ2AeAYLOK3ZqWPCqwizbH7Jkr9mlRgl-zoNZNcn2Gu89tvit7c-TnE8iCWRl6Bk8lSYq4Q9In4ECvSw1bntXblBkZFwW-BHQ2gA_GeFgxKEgqjR35KAeREGVFem-sAjNFuHZiFdb5TQakoN1ldsXDZbZhudYmh8TAfv3a43RQuQEkeS4YrTUk_rsgoE6ZCci8OBXt2XVnvb8fAHM23OxCDdY3CUe-bRmhqf6I3zngP4dHaO6ns2F_zdEdAMNoaqnfC5uY9PnmWxPKvAGyFhKO29t1x5eZM5vdim47sUXheAj7Q8LFZ85ucptzWTPIFQb9ReEEVUZ3hYdo_HLZyp2H_YroijSL6Iv6ygo2RvAp0eRaFyvtdrMIgq_hORs1GUYOWk-bvVNE-I3hqOM0ZlK-KWXCoBwJZNJFP7Ap5owjmcW2jPEknZk7Xh7IcRgeADHV5V5vfUD3_q7yD_RUWEtIBRwfZtWEEI9J5x6OFiaHbSi0jNUtL96hlu63Uh_AZUySwqhWQVhGKzpbBbkwL1JVcPAVtyfIlMPDhksuaByoo9xyhgA69LdYhNvSayK-QTjJBdREKfsd7wFHBdop19uCDQX7mAYDO3EIwB3fQtqPZWd55Az3Fs5L218mUhl9bSPz0wpukPm13RMutvjRiMHrp12jYR6PiKavfKhHMMLmRF7bZC5PodgD-FpeC4vbW0sGXQL5_Nl0zgmaK4Y1OTgyYjReC03lyC9un_Z4uzTyxhOFwVhQAWVgNimwO8mpsWANYUXuDmcihpkysqR6vjaDLZjmLiorfbJVRox6zvUZjLbxCbYau_0kvP_NqUSZTNegHoesSyjtPEQTlw5vvdWPv-XqPUQuAFCQE9Lf8Hmp_k4eV-qMQQWnT3KaBCxGLLrZ_mC0">
+
+Coding Policies
+
+> 1. Let’s use python 3.12 with flask framework.​​​​​​​​​​​​​​​​
+> 2. let’s do a basic web client that mimics the look of telegram instant messager.  Let’s not use any cookies on the client.  use Model-view-controller architecture and software design patterns​​​​​.
+> 3. Let’s use SQLite for dynamic data and store static world data in json files.  We will save the dynamic data to SQLite as needed.​​​​​​​​​​​​​​​​
+> 4. Let’s keep this version simple and not support multiplayer, threads, async processing or real-time​​​​​​​​​​​​​​​​ aspects.
+> 5. For UI use Minimal vanilla javascript. We can use basic polling to update the ui without manual page reloads​​​​​​​​​​​​​​​​.
+> 6. Let’s create unit tests for all classes and functions.  There should be a separate endpoint to run the unit tests apart from the main game. We don’t need integration or automated testing at this time. Simple is our mantra​​​​​​​​​​​​​​​​.
+> 7. Let’s keep it simple and assume our world will be small enough not to require optimization or performance concerns​​​​​​​​​​​​​​​​.
+> 8. We will want to create two main functions for communication.  One to send messages to the player and one to log messages to the server.  This logging system should be very simple.  Errors can be sent to the player via the send message functionality​​​​​​​​​​​​​​​​
+> 9. Use a json config file to manage game settings.  Let’s keep config settings very basic for now​​​​​​​​​​​​​​​​
+> 10. Thengame should be turn based where we wait for the player to send input before moving on the calculation of the game’s reactions.  We can update the game state only after the player takes his turn.  This will keep it simple​​​​​​​​​​​​​​​​
+
+Summary
+1. Technology Stack: Python 3.12 with Flask
+2. Architecture: Web-based, MVC pattern
+3. Data Management: SQLite for dynamic data, JSON for static data
+4. Concurrency: Single-player, synchronous processing
+5. User Interface: Minimal vanilla JavaScript, basic polling for updates
+6. Testing: Unit tests for all classes and functions
+7. Scalability: Focus on basic functionality for now
+8. Error Handling: Simple logging and player messaging system
+9. Configuration: Basic JSON config file
+10. Extensibility: Use design patterns where applicable, but keep it simple
+11. Networking: None for this version
+12. Initialization: Option to create a new character or load a single saved game
+13. Main Game Loop: Turn-based, update game state after each player action
+
