@@ -43,10 +43,14 @@
                 <button id="mount-button" onclick="mountDragon()">Mount Dragon</button>
                 <button id="dismount-button" onclick="dismountDragon()" style="display: none;">Dismount Dragon</button>
                 <button onclick="viewInventory()">View Inventory</button>
+                <button onclick="viewFactions()">View Factions</button>
+                <button onclick="viewQuests()">View Quests</button>
+                <button onclick="completeQuest()">Complete Active Quest</button>
                 <div id="move-buttons"></div>
                 <div id="fly-buttons"></div>
                 <div id="inventory"></div>
                 <div id="npcs"></div>
+                <div id="quests"></div>
             </div>
             <div id="combat-controls" style="display: none;">
                 <h2>Combat</h2>
@@ -210,6 +214,20 @@
                         npcsDiv.appendChild(npcButton);
                     });
                 }
+
+                // Update quest display
+                const questsDiv = document.getElementById('quests');
+                questsDiv.innerHTML = '';
+                if (data.game_state.quests) {
+                    data.game_state.quests.forEach(quest => {
+                        if (!quest.completed) {
+                            const questButton = document.createElement('button');
+                            questButton.textContent = `Start Quest: ${quest.title}`;
+                            questButton.onclick = function() { startQuest(quest.title); };
+                            questsDiv.appendChild(questButton);
+                        }
+                    });
+                }
             }
 
             locationInfo.innerHTML = `<p>${data.game_state.current_location}</p>`;
@@ -261,6 +279,26 @@
 
         function talkToNPC(npcName) {
             sendAction(`talk_to:${npcName}`);
+        }
+
+        function viewFactions() {
+            sendAction('view_factions');
+        }
+
+        function adjustFactionReputation(faction, amount) {
+            sendAction(`adjust_faction:${faction}:${amount}`);
+        }
+
+        function viewQuests() {
+            sendAction('view_quests');
+        }
+
+        function startQuest(questTitle) {
+            sendAction(`start_quest:${questTitle}`);
+        }
+
+        function completeQuest() {
+            sendAction('complete_quest');
         }
 
         function sendAction(action) {
