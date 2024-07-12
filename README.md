@@ -158,7 +158,7 @@ Coding Policies
 > 7. Let’s keep it simple and assume our world will be small enough not to require optimization or performance concerns​​​​​​​​​​​​​​​​.
 > 8. We will want to create two main functions for communication.  One to send messages to the player and one to log messages to the server.  This logging system should be very simple.  Errors can be sent to the player via the send message functionality​​​​​​​​​​​​​​​​
 > 9. Use a json config file to manage game settings.  Let’s keep config settings very basic for now​​​​​​​​​​​​​​​​
-> 10. Thengame should be turn based where we wait for the player to send input before moving on the calculation of the game’s reactions.  We can update the game state only after the player takes his turn.  This will keep it simple​​​​​​​​​​​​​​​​
+> 10. The game should be turn based where we wait for the player to send input before moving on the calculation of the game’s reactions.  We can update the game state only after the player takes his turn.  This will keep it simple​​​​​​​​​​​​​​​​
 
 Summary
 1. Technology Stack: Python 3.12 with Flask
