@@ -34,7 +34,7 @@
             <button onclick="bondWithDragon()">Bond with Dragon</button>
         </div>
         <div id="game-play" style="display: none;">
-            <div id="output"></div>
+            <div id="non-combat-output"></div>
             <div id="location-info"></div>
             <div id="available-moves"></div>
             <div id="non-combat-controls">
@@ -50,7 +50,7 @@
             </div>
             <div id="combat-controls" style="display: none;">
                 <h2>Combat</h2>
-                <div id="combat-log" style="white-space: pre-wrap;"></div>
+                <div id="combat-output" style="white-space: pre-wrap;"></div>
                 <button onclick="playerAttack()">Attack</button>
                 <button onclick="playerSpecialAbility()">Special Ability</button>
                 <button onclick="playerUseItem()">Use Item</button>
@@ -80,7 +80,7 @@
                 console.log("Game started successfully:", data);
                 document.getElementById('start-game').style.display = 'none';
                 document.getElementById('dragon-bonding').style.display = 'block';
-                const output = document.getElementById('output');
+                const output = document.getElementById('non-combat-output');
                 output.innerHTML = `<p>Welcome, ${data.player.name} the ${data.player.character_class}! It's time to bond with your dragon.</p>`;
             })
             .catch(error => {
@@ -134,7 +134,8 @@
         }
 
         function updateGameState(data) {
-            const output = document.getElementById('output');
+            const nonCombatOutput = document.getElementById('non-combat-output');
+            const combatOutput = document.getElementById('combat-output');
             const locationInfo = document.getElementById('location-info');
             const moveButtons = document.getElementById('move-buttons');
             const flyButtons = document.getElementById('fly-buttons');
@@ -145,17 +146,16 @@
             const nonCombatControls = document.getElementById('non-combat-controls');
             const combatControls = document.getElementById('combat-controls');
 
-            output.innerHTML += `<p>${data.message}</p>`;
-            locationInfo.innerHTML = `<p>${data.game_state.current_location}</p>`;
-
             if (data.game_state.in_combat) {
                 nonCombatControls.style.display = 'none';
                 combatControls.style.display = 'block';
-                const combatLog = document.getElementById('combat-log');
-                combatLog.textContent = data.game_state.combat_log || '';
+                combatOutput.textContent = data.game_state.combat_log || '';
             } else {
                 nonCombatControls.style.display = 'block';
                 combatControls.style.display = 'none';
+                if (data.message) {
+                    nonCombatOutput.innerHTML += `<p>${data.message}</p>`;
+                }
 
                 // Clear previous move and fly buttons
                 moveButtons.innerHTML = '';
@@ -211,6 +211,8 @@
                     });
                 }
             }
+
+            locationInfo.innerHTML = `<p>${data.game_state.current_location}</p>`;
         }
 
         function look() {
