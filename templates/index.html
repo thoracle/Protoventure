@@ -45,6 +45,7 @@
             <div id="move-buttons"></div>
             <div id="fly-buttons"></div>
             <div id="inventory"></div>
+            <div id="npcs"></div>
         </div>
         <div id="combat" style="display: none;">
             <h2>Combat</h2>
@@ -140,6 +141,7 @@
             const inventoryDiv = document.getElementById('inventory');
             const combatDiv = document.getElementById('combat');
             const combatLog = document.getElementById('combat-log');
+            const npcsDiv = document.getElementById('npcs');
 
             output.innerHTML += `<p>${data.message}</p>`;
             locationInfo.innerHTML = `<p>${data.game_state.current_location}</p>`;
@@ -194,6 +196,17 @@
             } else {
                 combatDiv.style.display = 'none';
             }
+
+            // Update NPC display
+            npcsDiv.innerHTML = '';
+            if (data.game_state.npcs) {
+                data.game_state.npcs.forEach(npc => {
+                    const npcButton = document.createElement('button');
+                    npcButton.textContent = `Talk to ${npc.name}`;
+                    npcButton.onclick = function() { talkToNPC(npc.name); };
+                    npcsDiv.appendChild(npcButton);
+                });
+            }
         }
 
         function look() {
@@ -238,6 +251,10 @@
 
         function playerUseItem() {
             sendAction('use_item');
+        }
+
+        function talkToNPC(npcName) {
+            sendAction(`talk_to:${npcName}`);
         }
 
         function sendAction(action) {
