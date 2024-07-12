@@ -63,12 +63,12 @@ class Game:
     def initiate_combat(self, enemy):
         self.in_combat = True
         self.current_enemy = enemy
-        self.combat_log = [f"You encounter a {enemy.name}!"]
+        self.combat_log = [f"You encounter a {enemy.name}!\n"]
         return "\n".join(self.combat_log)
 
     def player_turn(self, action):
         enemy = self.current_enemy
-        self.combat_log.append("Your turn:")
+        self.combat_log.append("\nYour turn:")
         
         if action == "attack":
             attack_type, damage = self.player.attack_enemy()
@@ -90,7 +90,7 @@ class Game:
             self.combat_log.append("Invalid action. You lose your turn!")
 
         if enemy.is_defeated():
-            self.combat_log.append(f"You have defeated the {enemy.name}!")
+            self.combat_log.append(f"\nYou have defeated the {enemy.name}!")
             exp_gain = enemy.max_health * 2
             self.player.gain_experience(exp_gain)
             self.combat_log.append(f"You gained {exp_gain} experience points!")
@@ -101,7 +101,7 @@ class Game:
             self.combat_log.extend(self.enemy_turn(enemy))
 
         if self.player.is_defeated():
-            self.combat_log.append("You have been defeated!")
+            self.combat_log.append("\nYou have been defeated!")
             self.in_combat = False
             self.current_enemy = None
 
@@ -109,8 +109,7 @@ class Game:
         return "\n".join(self.combat_log)
 
     def enemy_turn(self, enemy):
-        log = []
-        log.append(f"{enemy.name}'s turn:")
+        log = [f"\n{enemy.name}'s turn:"]
         attack_type, damage = enemy.attack_player()
         if attack_type == "miss":
             log.append(f"The {enemy.name}'s attack missed!")
