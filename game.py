@@ -16,6 +16,7 @@ class Game:
         self.in_combat = False
         self.current_enemy = None
         self.npc_manager = NPCManager()
+        self.combat_log = []
 
     def load_config(self):
         with open('config.json', 'r') as config_file:
@@ -62,50 +63,50 @@ class Game:
     def initiate_combat(self, enemy):
         self.in_combat = True
         self.current_enemy = enemy
-        combat_log = [f"You encounter a {enemy.name}!"]
-        return "\n".join(combat_log)
+        self.combat_log = [f"You encounter a {enemy.name}!"]
+        return "\n".join(self.combat_log)
 
     def player_turn(self, action):
         enemy = self.current_enemy
-        log = []
+        self.combat_log.append("Your turn:")
         
         if action == "attack":
             attack_type, damage = self.player.attack_enemy()
             if attack_type == "miss":
-                log.append("Your attack missed!")
+                self.combat_log.append("Your attack missed!")
             else:
                 actual_damage = enemy.take_damage(damage)
                 if attack_type == "critical":
-                    log.append(f"Critical hit! You deal {actual_damage} damage to the {enemy.name}!")
+                    self.combat_log.append(f"Critical hit! You deal {actual_damage} damage to the {enemy.name}!")
                 else:
-                    log.append(f"You deal {actual_damage} damage to the {enemy.name}.")
+                    self.combat_log.append(f"You deal {actual_damage} damage to the {enemy.name}.")
         elif action == "special_ability":
             ability, damage = self.player.special_ability()
             actual_damage = enemy.take_damage(damage)
-            log.append(f"You use {ability} and deal {actual_damage} damage to the {enemy.name}!")
+            self.combat_log.append(f"You use {ability} and deal {actual_damage} damage to the {enemy.name}!")
         elif action == "use_item":
-            log.append(self.use_item_in_combat())
+            self.combat_log.append(self.use_item_in_combat())
         else:
-            log.append("Invalid action. You lose your turn!")
+            self.combat_log.append("Invalid action. You lose your turn!")
 
         if enemy.is_defeated():
-            log.append(f"You have defeated the {enemy.name}!")
+            self.combat_log.append(f"You have defeated the {enemy.name}!")
             exp_gain = enemy.max_health * 2
             self.player.gain_experience(exp_gain)
-            log.append(f"You gained {exp_gain} experience points!")
+            self.combat_log.append(f"You gained {exp_gain} experience points!")
             self.world.remove_enemy(enemy)
             self.in_combat = False
             self.current_enemy = None
         else:
-            log.extend(self.enemy_turn(enemy))
+            self.combat_log.extend(self.enemy_turn(enemy))
 
         if self.player.is_defeated():
-            log.append("You have been defeated!")
+            self.combat_log.append("You have been defeated!")
             self.in_combat = False
             self.current_enemy = None
 
         self.save_game()
-        return "\n".join(log)
+        return "\n".join(self.combat_log)
 
     def enemy_turn(self, enemy):
         log = []
@@ -197,6 +198,7 @@ class Game:
             "available_moves": self.world.get_available_moves(),
             "all_locations": self.world.get_all_locations(),
             "in_combat": self.in_combat,
+            "combat_log": "\n".join(self.combat_log) if self.in_combat else None,
             "current_enemy": self.current_enemy.to_dict() if self.current_enemy else None,
             "npcs": [npc.to_dict() for npc in self.world.get_npcs_at_current_location()]
         }
